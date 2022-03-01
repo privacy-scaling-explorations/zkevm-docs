@@ -1,0 +1,61 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+env:
+  MDBOOK_URL: "https://github.com/rust-lang/mdBook/releases/download/v0.4.15/mdbook-v0.4.15-x86_64-unknown-linux-gnu.tar.gz"
+  MDBOOK_TOC_URL: "https://github.com/badboy/mdbook-toc/releases/download/0.8.0/mdbook-toc-0.8.0-x86_64-unknown-linux-gnu.tar.gz"
+  # MDBOOK_KATEX_URL: "https://github.com/lzanini/mdbook-katex/releases/download/v0.2.10/mdbook-katex-v0.2.10-x86_64-unknown-linux-gnu.tar.gz"
+  MDBOOK_KATEX_URL: "https://github.com/drmingdrmer/mdbook-katex/releases/download/v0.2.17/mdbook-katex-v0.2.17-linux.zip"
+  MDBOOK_MERMAID_URL: "https://github.com/badboy/mdbook-mermaid/releases/download/v0.10.0/mdbook-mermaid-v0.10.0-x86_64-unknown-linux-gnu.tar.gz"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+          #    - name: Install rust toolchain
+          #      uses: actions-rs/toolchain@v1
+          #      with:
+          #        toolchain: stable
+          #    - name: Cargo cache
+          #      uses: actions/cache@v2
+          #      with:
+          #        path: |
+          #          ~/.cargo/
+          #        key: cargo-cache
+          #    - name: Install mdbook and plugins
+          #      run: |
+          #        ./install-deps.sh
+          #        echo $HOME/.cargo/bin >> $GITHUB_PATH
+    - name: Install mdbook and plugins
+      run: |
+        mkdir mdbook
+        curl -sSL ${MDBOOK_URL} | tar -xz --directory=./mdbook
+        # curl -sSL ${MDBOOK_KATEX_URL} | tar -xz --directory=./mdbook
+        # mv ./mdbook/target/x86_64-unknown-linux-gnu/release/mdbook-katex ./mdbook
+        # rmdir ./mdbook/target/x86_64-unknown-linux-gnu/release/
+        curl -sSL ${MDBOOK_KATEX_URL} -o mdbook-katex.zip
+        unzip mdbook-katex.zip -d ./mdbook
+        curl -sSL ${MDBOOK_TOC_URL} | tar -xz --directory=./mdbook
+        curl -sSL ${MDBOOK_MERMAID_URL} | tar -xz --directory=./mdbook
+        echo `pwd`/mdbook >> $GITHUB_PATH
+    - name: Deploy GitHub Pages
+      run: |
+        mdbook build
+        git worktree add gh-pages gh-pages
+        git config user.name "Deploy from CI"
+        git config user.email ""
+        cd gh-pages
+        # Delete the ref to avoid keeping history.
+        git update-ref -d refs/heads/gh-pages
+        rm -rf *
+        rm -rf .github
+        rm -rf .gitignore
+        mv ../book/* .
+        git add .
+        git commit -m "Deploy $GITHUB_SHA to gh-pages"
+        git push --force

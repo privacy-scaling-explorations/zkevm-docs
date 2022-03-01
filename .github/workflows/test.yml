@@ -1,0 +1,21 @@
+name: Test
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Install mdbook and plugins
+      run: |
+        mkdir mdbook
+        cp bin/* ./mdbook
+        echo `pwd`/mdbook >> $GITHUB_PATH
+    - name: Build mdbook
+      run: |
+        mdbook build
+

@@ -1,0 +1,27 @@
+[book]
+authors = ["The appliedzkp team"]
+language = "en"
+multilingual = false
+src = "src"
+title = "AppliedZKP's zkEVM Documentation"
+
+[preprocessor]
+
+[preprocessor.toc]
+command = "mdbook-toc"
+renderer = ["html"]
+max-level = 4
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+
+[preprocessor.katex]
+throw-on-error = true
+trust = false
+
+[output]
+
+[output.html]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
+
+[output.katex]
