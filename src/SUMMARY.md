@@ -13,3 +13,4 @@
     - [Merkle Patricia Tree Circuit](./architecture/mpt-circuit.md)
 - [Design Notes](./design.md)
     - [Random Linear Combination](./design/random-linear-combinaion.md)
+        - [Full Runnable Code](./design/random-linear-combinaion/full-runnable-code.md)
