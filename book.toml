@@ -7,6 +7,10 @@ title = "AppliedZKP's zkEVM Documentation"
 
 [preprocessor]
 
+# [preprocessor.katex]
+# throw-on-error = true
+# trust = false
+
 [preprocessor.toc]
 command = "mdbook-toc"
 renderer = ["html"]
@@ -15,13 +19,10 @@ max-level = 4
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
 
-[preprocessor.katex]
-throw-on-error = true
-trust = false
-
 [output]
 
-[output.html]
-additional-js = ["mermaid.min.js", "mermaid-init.js"]
+# [output.katex]
 
-[output.katex]
+[output.html]
+mathjax-support = true
+additional-js = ["mermaid.min.js", "mermaid-init.js"]

@@ -3,6 +3,11 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  MDBOOK_URL: "https://github.com/rust-lang/mdBook/releases/download/v0.4.15/mdbook-v0.4.15-x86_64-unknown-linux-gnu.tar.gz"
+  MDBOOK_TOC_URL: "https://github.com/badboy/mdbook-toc/releases/download/0.8.0/mdbook-toc-0.8.0-x86_64-unknown-linux-gnu.tar.gz"
+  MDBOOK_MERMAID_URL: "https://github.com/badboy/mdbook-mermaid/releases/download/v0.10.0/mdbook-mermaid-v0.10.0-x86_64-unknown-linux-gnu.tar.gz"
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -13,7 +18,9 @@ jobs:
     - name: Install mdbook and plugins
       run: |
         mkdir mdbook
-        cp bin/* ./mdbook
+        curl -sSL ${MDBOOK_URL} | tar -xz --directory=./mdbook
+        curl -sSL ${MDBOOK_TOC_URL} | tar -xz --directory=./mdbook
+        curl -sSL ${MDBOOK_MERMAID_URL} | tar -xz --directory=./mdbook
         echo `pwd`/mdbook >> $GITHUB_PATH
     - name: Build mdbook
       run: |

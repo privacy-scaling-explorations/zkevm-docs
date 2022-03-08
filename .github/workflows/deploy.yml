@@ -7,7 +7,7 @@ env:
   MDBOOK_URL: "https://github.com/rust-lang/mdBook/releases/download/v0.4.15/mdbook-v0.4.15-x86_64-unknown-linux-gnu.tar.gz"
   MDBOOK_TOC_URL: "https://github.com/badboy/mdbook-toc/releases/download/0.8.0/mdbook-toc-0.8.0-x86_64-unknown-linux-gnu.tar.gz"
   # MDBOOK_KATEX_URL: "https://github.com/lzanini/mdbook-katex/releases/download/v0.2.10/mdbook-katex-v0.2.10-x86_64-unknown-linux-gnu.tar.gz"
-  MDBOOK_KATEX_URL: "https://github.com/drmingdrmer/mdbook-katex/releases/download/v0.2.17/mdbook-katex-v0.2.17-linux.zip"
+  # MDBOOK_KATEX_URL: "https://github.com/drmingdrmer/mdbook-katex/releases/download/v0.2.17/mdbook-katex-v0.2.17-linux.zip"
   MDBOOK_MERMAID_URL: "https://github.com/badboy/mdbook-mermaid/releases/download/v0.10.0/mdbook-mermaid-v0.10.0-x86_64-unknown-linux-gnu.tar.gz"
 
 jobs:
@@ -38,8 +38,8 @@ jobs:
         # curl -sSL ${MDBOOK_KATEX_URL} | tar -xz --directory=./mdbook
         # mv ./mdbook/target/x86_64-unknown-linux-gnu/release/mdbook-katex ./mdbook
         # rmdir ./mdbook/target/x86_64-unknown-linux-gnu/release/
-        curl -sSL ${MDBOOK_KATEX_URL} -o mdbook-katex.zip
-        unzip mdbook-katex.zip -d ./mdbook
+        # curl -sSL ${MDBOOK_KATEX_URL} -o mdbook-katex.zip
+        # unzip mdbook-katex.zip -d ./mdbook
         curl -sSL ${MDBOOK_TOC_URL} | tar -xz --directory=./mdbook
         curl -sSL ${MDBOOK_MERMAID_URL} | tar -xz --directory=./mdbook
         echo `pwd`/mdbook >> $GITHUB_PATH
