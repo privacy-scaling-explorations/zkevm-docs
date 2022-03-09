@@ -4,6 +4,20 @@
 
 # Concepts
 
+## Architecture diagram
+
+Each circuit is layouted to be friendly to build their own custom constraints. When circuits encounter some expensive operations, they can outsource the effort to other circuits by lookup. The relationship between circuits would be like:
+
+![](./architecture_diagram2.png)
+
+In the end the circuits would be assembled depending on their dimension and the desired capacity. For example, we can just combine 2 different circuits by using different columns, or stack them using same columns with extra selectors.
+
+In order to reduce the time required to build a proof of a full block and to
+simplify the verification step, we will build an aggregation circuit that in
+turn verifies the proofs of each sub-circuit shown in the diagram.  See [Design
+Notes, Recursion](./design/recursion.md) for details on the recursion strategy
+used in the aggregation circuit.
+
 ## Circuit as a lookup table
 
 In halo2, the lookup is flexible to be configured, anything able to be turned into `Expression` could used to be `item: Tuple[int, ...]` or `table: Set[Tuple[int, ...]]` in lookup, and then it `assert item in table`. The `Expression` includes constant, queried fixed, advice or instance column at arbitrary rotation, addition/multiplication of `Expression`.
@@ -22,17 +36,11 @@ However, sometimes there are some properties we can't ensure by only lookups. Fo
 > 
 > **han**
 
-## Architecture diagram
-
-Each circuit is layouted to be friendly to build their own custom constraints. When circuits encounter some expensive operations, they can outsource the effort to other circuits by lookup. The relationship between circuits would be like:
-
-![](./architecture_diagram.png)
-
-In the end the circuits would be assembled depending on their dimension and the desired capacity. For example, we can just combine 2 different circuits by using different columns, or stack them using same columns with extra selectors.
-
 ## EVM word encoding
 
-[TODO](https://github.com/appliedzkp/zkevm-specs/blob/master/specs/word-encoding.md)
+See [Design Notes, Random Linear Combination](./design/random-linear-combinaion.md)
+
+- [Word encoding spec](https://github.com/appliedzkp/zkevm-specs/blob/master/specs/word-encoding.md)
 
 # Custom types
 

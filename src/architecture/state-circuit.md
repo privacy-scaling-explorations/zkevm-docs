@@ -41,7 +41,7 @@ EVM's memory expands implicitly, for example, when the memory is empty and it en
 
 The implicit expansion behavior makes even the simple `MLOAD` and `MSTORE` complicated in EVM circuit, so we have a trick to outsource the effort to State circuit by constraining the first record of each memory unit to be a write or have value `0`. It saves the variable amount of effort to expand memory and ignore those never used memory, only used memory addresses will be initlized with `0` so as lazy initialization.
 
-> This concept is also used in another case: the opcode `SELFDESTRUCT` also has ability to update the variable amount of data, it reset the `balance`, `nonce`, `code_hash`, and every `storage_slot` even it's not used in a step. So for each state under account, we can add a `revision_id` handle such case, see [here](https://hackmd.io/G48BKqdPScyoFDHPNzgOYQ?view#SELFDESTRUCT) for details.
+> This concept is also used in another case: the opcode `SELFDESTRUCT` also has ability to update the variable amount of data, it reset the `balance`, `nonce`, `code_hash`, and every `storage_slot` even it's not used in a step. So for each state under account, we can add a `revision_id` handle such case, see [Design Notes, State Write Reversion Note2, SELFDESTRUCT](./state-write-reversion2.md#selfdestruct) for details.
 > ==TODO== Convert this into an issue for discussion
 >
 > **han**

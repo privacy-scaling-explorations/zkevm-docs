@@ -26,7 +26,75 @@ Fortunately, most error cases are easy to verify with some pre-built lookup tabl
 
 So we can enumerate [all possible execution results](https://github.com/appliedzkp/zkevm-specs/blob/83ad4ed571e3ada7c18a411075574110dfc5ae5a/src/zkevm_specs/evm/execution_result/execution_result.py#L4) and turn EVM circuit into a finite state machine like:
 
-![](./evm-circuit_step-transition.png)
+```mermaid
+flowchart LR
+    BEGIN[.] --> BeginTx;
+
+    BeginTx --> |no code| EndTx;
+    BeginTx --> |has code| EVMExecStates;
+    EVMExecStates --> EVMExecStates;
+    EVMExecStates --> EndTx;
+
+    EndTx --> BeginTx;
+
+    EndTx --> EndBlock;
+    EndBlock --> EndBlock;
+    EndBlock --> END[.];
+```
+```mermaid
+flowchart LR
+    subgraph A [EVMExecStates]
+    BEGIN2[.] --> SuccessStep;
+    BEGIN2[.] --> ReturnStep;
+    SuccessStep --> SuccessStep;
+    SuccessStep --> ReturnStep;
+    ReturnStep --> |not is_root| SuccessStep;
+    ReturnStep --> |not is_root| ReturnStep;
+    ReturnStep --> |is_root| END2[.];
+    end
+```
+
+- **BeginTx**:
+    - beginning of a transaction.
+- **EVMExecStates** = [ SuccessStep | ReturnStep ]
+- **SuccessStep** = [ ExecStep | ExecMetaStep | ExecSubStep ]
+    - set of states that suceed and continue the execution within the call.
+- **ReturnStep** = [ ExplicitReturn | Error ]
+    - set of states that halt the execution of a call and return to the caller
+      or go to the next tx.
+- **ExecStep**: 
+    - 1-1 mapping with a GethExecStep for opcodes that map to a single gadget
+      with a single step.  Example: `ADD`, `MUL`, `DIV`, `CREATE2`.
+- **ExecMetaStep**: 
+    - N-1 mapping with a GethExecStep for opcodes that share the same gadget
+      (due to similarity) with a single step.  For example `{ADD, SUB}`,
+      `{PUSH*}`, `{DUP*}` and `{SWAP*}`.
+- **ExecSubStep**: 
+    - 1-N mapping with a GethExecStep for opcodes that deal with dynamic size
+      arrays for which multiple steps are generated.
+        - `CALLDATACOPY` -> CopyToMemory
+        - `RETURNDATACOPY` -> TODO
+        - `CODECOPY` -> TODO
+        - `EXTCODECOPY` -> TODO
+        - `SHA3` -> TODO
+        - `LOGN` -> CopyToLog
+- **ExplicitReturn**: 
+    - 1-1 mapping with a GethExecStep for opcodes that return from a call
+      without exception.
+- **Error** = [ ErrorEnoughGas | ErrorOutOfGas ]
+    - set of states that are associated with exceptions caused by opcodes.
+- **ErrorEnoughGas**: 
+    - set of error states that are unrelated to out of gas.  Example:
+      `InvalidOpcode`, `StackOverflow`, `InvalidJump`.
+- **ErrorOutOfGas**: 
+    - set of error states for opcodes that run out of gas.  For each opcode
+      (sometimes group of opcodes) that has dynamic memory gas usage, there is
+      a specific **ErrorOutOfGas** error state.
+- **EndTx**
+    - end of a transaction.
+- **EndBlock**
+    - end of a block (serves also as padding for the rest of the state step slots)
+
 
 > In current implementation, we ask opcode implementer to also implement error cases, which seems to be redundant efforts. If we do this, they can focus more on opcode's success case. Also error cases are usually easier to verify, so I think it also reduces the overall implementation complexity.
 > 
@@ -71,6 +139,10 @@ To enable state write reversion, we need some meta information of a call:
 3. `state_write_counter` - To know how many state write we have done by now
 
 Then at each state write, we first check if `is_persistent` is `0`, if so we do an extra state write at `rw_counter_end_of_reversion - state_write_counter` with the old value, which reverts the state write in a reverse order.
+
+For more notes on state write reversion see:
+- [Design Notes, State Write Reversion Note 1](../design/state-write-reversion.md)
+- [Design Notes, State Write Reversion Note 2](../design/state-write-reversion2.md)
 
 ## Opcode fetching
 

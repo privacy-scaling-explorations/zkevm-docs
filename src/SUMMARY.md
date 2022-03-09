@@ -14,3 +14,6 @@
 - [Design Notes](./design.md)
     - [Random Linear Combination](./design/random-linear-combinaion.md)
         - [Full Runnable Code](./design/random-linear-combinaion/full-runnable-code.md)
+    - [Recursion](./design/recursion.md)
+    - [State Write Reversion Note 1](./design/state-write-reversion.md)
+    - [State Write Reversion Note 2](./design/state-write-reversion2.md)
