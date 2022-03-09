@@ -4,10 +4,10 @@
 
 ## Projects
 
-- https://github.com/AztecProtocol/barretenberg
-- https://github.com/scroll-tech/halo2-snark-aggregator
-- https://github.com/trapdoor-Tech/halo2-aggregation
-- https://github.com/matter-labs/solidity_plonk_verifier/tree/recursive
+- <https://github.com/AztecProtocol/barretenberg>
+- <https://github.com/scroll-tech/halo2-snark-aggregator>
+- <https://github.com/trapdoor-Tech/halo2-aggregation>
+- <https://github.com/matter-labs/solidity_plonk_verifier/tree/recursive>
 
 ### Aztec barretenberg
 
