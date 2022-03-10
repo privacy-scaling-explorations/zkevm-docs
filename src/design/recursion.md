@@ -56,7 +56,7 @@ $$
 \ell_j(x) = \frac{\ell(x)}{\ell^\prime(x_j)(x-x_j)}
 $$
 
-Or by defining thhe _barycentric weights_
+Or by defining the _barycentric weights_
 
 $$
 w_j = \frac{1}{\ell^\prime(x_j)}
