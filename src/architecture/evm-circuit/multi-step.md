@@ -85,7 +85,7 @@ There could be classified to be 4 types:
         - `CODECOPY`
         - `EXTCODECOPY`
     - Copy from calldata or code to current memory.
-    - Memory gets filled with 0 when copy out of source's range, in other words, source is padded with 0 to the range.
+    - Memory gets filled with 0's when copied out of source's range, in other words, source is padded with 0's to the range.
 2. `* -> memory (no padding)`
     - Including `RETURNDATACOPY`.
     - Similar to Type 1, but the range is explicitly checked to be in source's range, otherwise the EVM halts with exception. So no padding issue.
@@ -172,7 +172,7 @@ This approach introduce internal `ExecutionState` with extra constraint of `Exec
 
 And they do the bytes copy with range check specified by trigger `ExecutionState`.
 
-Also these internal `ExecutionState` always propagate `StepState` as the same value, since the transition is already done by the trigger `ExecutionState`.
+Also these internal `ExecutionState`s always propagate `StepState`s as the same value, since the transition is already done by the trigger of `ExecutionState`.
 
 Take `CALL` then `CALLDATALOAD` as an example:
 
@@ -191,7 +191,7 @@ Take `CALL` then `CALLDATALOAD` as an example:
     - `dst_offset = memOffset = 0`
     - `bytes_left = length = 32`
 
-Then every step we check if `src_offset < src_end`, if not, we need to disalbe the source lookup and fill zeros into destination. Then add the `*_offset` by the amount of bytes we process at a step, and subtract `bytes_left` also by it, then propagate them to next step.
+Then, in every step we check if `src_offset < src_end`, if not, we need to disabe the source lookup and fill zeros into destination. Then add the `*_offset` by the amount of bytes we process at a step, and subtract `bytes_left` also by it, then propagate them to next step.
 
 ## Conclusion
 

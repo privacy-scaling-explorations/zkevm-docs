@@ -2,7 +2,7 @@
 
 The zkEVM aims to specify and implement a solution to validate Ethereum blocks
 via zero knowledge proofs.  The project aims to achieve 100% compatibility with
-the Ethereum EVM.
+the Ethereum's EVM.
 
 This book contains general documentation of the project.
 

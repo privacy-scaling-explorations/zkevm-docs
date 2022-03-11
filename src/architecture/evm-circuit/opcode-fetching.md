@@ -6,16 +6,16 @@
 
 For opcode fetching, we might have 3 sources in different situation:
 
-1. When contract interaction, we lookup `bytecode_table` to read bytecode
-2. When contract creation in root call, we lookup `tx_table` to read transaction's calldata
-3. When contract creation in internal call, we lookup `rw_table` to read caller's memory
+1. When contract interaction, we lookup `bytecode_table` to read bytecode.
+2. When contract creation in root call, we lookup `tx_table` to read transaction's calldata.
+3. When contract creation in internal call, we lookup `rw_table` to read caller's memory.
 
 Also we need to handle 2 kinds of annoying EVM features:
 
 1. Implicit `STOP` returning if fetching out of range.
 2. For `JUMP*`, we need to verify:
     1. destination is a `JUMPDEST`
-    2. destination is not data section of `PUSH*`
+    2. destination is not a data section of `PUSH*`
 
 Since for each step `program_counter` only changes in 3 situation:
 
@@ -28,11 +28,11 @@ else:
     program_counter += 1
 ```
 
-For all opcodes except for `JUMP*` and `PUSH*`, we only needs to worry about first issue, and we can solve it by check if `bytecode_length <= program_counter` then detect such case.
+For all opcodes except for `JUMP*` and `PUSH*`, we only need to worry about first issue, and we can solve it by checking if `bytecode_length <= program_counter` then detect such case.
 
-For `PUHS*` we can do the lookup only when `program_counter + x < bytecode_length` and simulate the "implicit `0`". (Other opcodes like `CALLDATALOAD`, `CALLDATACOPY`, `CODECOPY`, `EXTCODECOPY` also encounter such "implicit `0`" problem, and we need to handle them carefully.)
+For `PUSH*` we can do the lookup only when `program_counter + x < bytecode_length` and simulate the "implicit `0`". (Other opcodes like `CALLDATALOAD`, `CALLDATACOPY`, `CODECOPY`, `EXTCODECOPY` also encounter such "implicit `0`" problem, and we need to handle them carefully).
 
-However, for `JUMP*` we need more trick to handle, especially for the **issue 2.2.**, which seems not possible to check if we don't scan through all opcodes from the beginning to the end.
+However, for `JUMP*` we need one more trick to handle, especially for the **issue 2.2.**, which seems not possible to check if we don't scan through all opcodes from the beginning to the end.
 
 Focus on solving the **issue 2.2.**, my thought went through 2 steps:
 
@@ -89,15 +89,15 @@ def constraint(prev: Row, curr: Row, is_first_row: bool):
 
 And when handling `JUMP*` we can check `is_code` for verification.
 
-However, for memory in State circuit, it's layouted to be `memory_address` but then `rw_counter`, which we can't select at some specific point to do such analysis. So this approach seems not always working.
+However, the memory in the State circuit it's layouted to be `memory_address` and then `rw_counter`, which we can't select at some specific point to do such analysis. So this approach seems not work on all situations.
 
-## Step #2 - Explicitly copy memory to `bytecode_table`
+## Step #2 - Explicitly copy memory to bytecode_table
 
-It seems inevitable to copy the memory to `bytecode_table` since the `CREATE*` needs so to know the `bytecode_hash`. So maybe we can abuse such constraint to also copy the creation bytecode to `bytecode_table`, althought the hash of it means nothing, we still can use it as a unique identifier to index out the opcode.
+It seems inevitable to copy the memory to `bytecode_table` since the `CREATE*` needs it to know the `bytecode_hash`. So maybe we can abuse such constraint to also copy the creation bytecode to the `bytecode_table`. Althought the hash of it means nothing, we still can use it as a unique identifier to index out the opcode.
 
-Then we can define an internal multi-step execution result `COPY_MEMORY_TO_BYTECODE` which can only transited from `CREATE*` or `RETURN`, and it copies the memory with offset and length to `bytecode_table`.
+Then we can define an internal multi-step execution result `COPY_MEMORY_TO_BYTECODE` which can only transit from `CREATE*` or `RETURN`, and copy the memory from offset with length to the `bytecode_table`.
 
-Although it costs many steps to copy the creation code, it makes the opcode fetching source become simpler with only `bytecode_table` and `tx_table`, the issue of memory's unfriendly layout is also gone, **issue 2.2.** is then resolved.
+Although it costs many steps to copy the creation code, it makes the opcode fetching source become simpler with only `bytecode_table` and `tx_table`. The issue of memory's unfriendly layout is also gone, **issue 2.2.** is then resolved.
 
 > Memory copy on creation code seems terrible since a prover can reuse the same large chunk of memory to call multiple times of `CREATE*`, and we always need to copy them, which might cost many steps.
 > We need some benchmark to see if a block contains full of such `CREATE*` to know how much gas we can verify in a block, then know if it's aligned to current gas cost model or not, and decide whether to further optimize it.
@@ -108,9 +108,9 @@ Although it costs many steps to copy the creation code, it makes the opcode fetc
 
 ### Memory copy optimization
 
-When it comes to "memory copy", it means in EVM circuit we lookup both `rw_table` and `bytecode_table` to make sure the chunk of memory indeed exists in the latter table. However, EVM circuit doesn't have so friendly layout to do such operation (it costs many expressions to achieve so).
+When it comes to "memory copy", it means in EVM circuit we lookup both `rw_table` and `bytecode_table` to make sure the chunk of memory indeed exists in the latter table. However, EVM circuit doesn't have a friendly layout to do such operation (it costs many expressions to achieve so).
 
-If we want to further optimize "memory copy" respect to the concern in Step #2, since we know the memory to be copied is in chunk, and in `bytecode_table` it also exists in chunk, then we seem to let Bytecode circuit to do such operation with correct `rw_counter`, and in EVM circuit we only need to "trigger" such operation. We can add extra selector columns to enable it like:
+If we want to further optimize "memory copy" in respect to the concern hilighted in [Step #2](## Step #2 - Explicitly copy memory to bytecode_table), since we know the memory to be copied is in chunk, and in `bytecode_table` it also exists in chunk, then we seem to let Bytecode circuit to do such operation with correct `rw_counter`, and in EVM circuit we only need to "trigger" such operation. We can add extra selector columns to enable it like:
 
 $$
 \begin{array}{|c|c|}
@@ -171,7 +171,7 @@ For opcodes like `PUSH*`, `CALLDATALOAD`, `CALLDATACOPY`, `CODECOPY`, `EXTCODECO
 
 ### Tx calldata copy
 
-Since we already copy memory, why not also copy calldata part of `tx_table` to `bytecode_table`? We can use the same trick in [Memory copy optimization](#Memory-copy-optimization) to make sure tx calldata is copied to `bytecode_table`. Then we only have single source to do opcode fetching, which simplifies a lot of things.
+Since we already copy memory, why not also copy the calldata part of `tx_table` to `bytecode_table`? We can use the same trick as in [Memory copy optimization](#Memory-copy-optimization) to make sure tx calldata is copied to `bytecode_table`. Then we only have a single source to do opcode fetching, which simplifies a lot of things.
 
 > The only concern is, will this cost much on `bytecode_table`'s capacity? We still need actual benchmark to see if it's adoptable.
 >
