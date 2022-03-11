@@ -9,7 +9,7 @@ env:
   MDBOOK_MERMAID_URL: "https://github.com/badboy/mdbook-mermaid/releases/download/v0.10.0/mdbook-mermaid-v0.10.0-x86_64-unknown-linux-gnu.tar.gz"
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
