@@ -13,7 +13,7 @@
 
 #### Transcript for inner cirucit
 
-The rollup circuit uses blake2s to generate challenge, but with compressed input by pedersen hash [^barretenberg-transcript]. The inputs are serialized into list of 31 bytes field elements as the input of pedersen hash.
+The rollup circuit uses blake2s to generate the challenge, but with compressed input by pedersen hash [^barretenberg-transcript]. The inputs are serialized into a list of 31 bytes field elements as the input of pedersen hash.
 
 Also the rollup circuit use 128-bits challenge to reduce MSM work, then most of scalars are 128-bits, only those scalars multiplied with some other stuff (e.g. \\(\zeta\omega^i\\) or batch evaluation) would need 254-bits MSM.
 
@@ -31,7 +31,7 @@ $$
 >
 > **han**
 
-The actual verifier doesn't calculate the \\(\frac{1}{\delta}\\) for inner circuit, it just concats all the public inputs and let rollup circuit to calculate \\(\frac{1}{\delta}\\) for each inner circuit.
+The actual verifier doesn't calculate the \\(\frac{1}{\delta}\\) for inner circuit, it just concatenates all the public inputs and let rollup circuit to calculate \\(\frac{1}{\delta}\\) for each inner circuit.
 
 [^barretenberg-permutation-widget]: Explaination: <https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/proof_system/public_inputs/public_inputs_impl.hpp#L5-L137> <br>Used in permutation widget: <https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/proof_system/widgets/random_widgets/permutation_widget_impl.hpp#L368-L369>
 
@@ -94,7 +94,7 @@ Defining rotation set \\(R\\) contains \\(k\\) different points \\(\{\zeta_1\ome
 >
 > **han**
 
-In SHPLONK, verifier needs to calculate interpolation \\(r(\zeta_{2})\\) from rotation set \\(R\\) and their claimed evaluation value \\(\{y_j\}_{j\in[k]}\\).
+In SHPLONK, the verifier needs to calculate interpolation \\(r(\zeta_{2})\\) from rotation set \\(R\\) and their claimed evaluation value \\(\{y_j\}_{j\in[k]}\\).
 
 One of the largest benefit of barycentric formula is pre-computed barycentric weight. Although \\(R\\) contains different values in each proof, we can still pre-compute the normalized barycentric weight without \\(\zeta_1\\), to gain the benefit.
 
@@ -140,9 +140,9 @@ And each extra public input costs about 4 operations (mul + sub + div + add).
 
 In our case, we have split ZKEVM into different pieces, with some dependency relation in between.
 
-Fortunately, the dependency relation currently is always being like: One verified circuit serves self as a lookup table for another. For example, once  State circuit is verified to satasify its own relation, then we can synthesize its columns to be a lookup table for EVM circuit to do random access.
+Fortunately, the dependency relation currently is always being like: One verified circuit serves itself as a lookup table for another. For example, once State circuit is verified to satasify its own relation, then we can synthesize its columns to be a lookup table for EVM circuit to do random access.
 
-Serving self as a lookup table only needs to pass a single thing, that is the table commitment(s) (random linearly combined or not). And the difference between fixed table and such verified private table is: The former is built when setup so is already trusted, the latter is verified for each proof instance and is trusted as long as the relation is well-defined.
+Serving self as a lookup table only needs to pass a single check, that is the table commitment(s) (random linearly combined or not). And the difference between fixed table and such verified private table is: The former is built when setup so it is already trusted, the latter is verified for each proof instance and is trusted as long as the relation is well-defined.
 
 So, if a single recursive circuit can't aggregate all different circuits in ZKEVM, we can incrementally aggregate them, and only expose the verified private table's commitment(s) as public input, for next proofs' aggregation.
 

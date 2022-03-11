@@ -6,10 +6,23 @@
 
 ## Architecture diagram
 
-Each circuit is layouted to be capable to build their own custom constraints. When circuits encounter some expensive operations, they can outsource the effort to other circuits by through the usage of lookup arguments. 
+Each circuit is layouted to be capable to build their own custom constraints. When circuits encounter some expensive operations, they can outsource the effort to other circuits through the usage of lookup arguments. 
 The relationship between circuits looks like:
 
 ![](./architecture_diagram2.png)
+
+List of circuits and tables they generate/verify:
+
+| Circuit                                                | Table                                                                                                  |
+| ---                                                    | ---                                                                                                    |
+| [EVM Circuit](./architecture/evm-circuit.md)           |                                                                                                        |
+| [Bytecode Circuit](./architecture/bytecode-circuit.md) | [Bytecode Table](https://github.com/appliedzkp/zkevm-specs/blob/master/specs/tables.md#bytecode_table) |
+| [State Circuit](./architecture/state-circuit.md)       | [Rw Table](https://github.com/appliedzkp/zkevm-specs/blob/master/specs/tables.md#rw_table)             |
+| Block Circuit                                          | [Block Table](https://github.com/appliedzkp/zkevm-specs/blob/master/specs/tables.md#block_table)       |
+| [Tx Circuit](./architecture/tx-circuit.md)             | [Tx Table](https://github.com/appliedzkp/zkevm-specs/blob/master/specs/tables.md#tx_table)             |
+| [MPT Circuit](./architecture/mpt-circuit.md)           | MPT Table                                                                                              |
+| [Keccak Circuit](./architecture/keccak-circuit.md)     | Keccak Table                                                                                           |
+| [ECDSA Circuit](./architecture/ecdsa-circuit.md)       | ECDSA Table                                                                                            |
 
 In the end the circuits would be assembled depending on their dimension and the desired capacity. For example, we can just combine 2 different circuits by using different columns, or stack them using same columns with extra selectors.
 
