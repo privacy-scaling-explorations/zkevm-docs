@@ -110,7 +110,7 @@ Although it costs many steps to copy the creation code, it makes the opcode fetc
 
 When it comes to "memory copy", it means in EVM circuit we lookup both `rw_table` and `bytecode_table` to make sure the chunk of memory indeed exists in the latter table. However, EVM circuit doesn't have a friendly layout to do such operation (it costs many expressions to achieve so).
 
-If we want to further optimize "memory copy" in respect to the concern hilighted in [Step #2](## Step #2 - Explicitly copy memory to bytecode_table), since we know the memory to be copied is in chunk, and in `bytecode_table` it also exists in chunk, then we seem to let Bytecode circuit to do such operation with correct `rw_counter`, and in EVM circuit we only need to "trigger" such operation. We can add extra selector columns to enable it like:
+If we want to further optimize "memory copy" in respect to the concern highlighted in [Step #2](#step-2---explicitly-copy-memory-to-bytecode_table), since we know the memory to be copied is in chunk, and in `bytecode_table` it also exists in chunk, then we seem to let Bytecode circuit to do such operation with correct `rw_counter`, and in EVM circuit we only need to "trigger" such operation. We can add extra selector columns to enable it like:
 
 $$
 \begin{array}{|c|c|}

@@ -191,7 +191,7 @@ Take `CALL` then `CALLDATALOAD` as an example:
     - `dst_offset = memOffset = 0`
     - `bytes_left = length = 32`
 
-Then, in every step we check if `src_offset < src_end`, if not, we need to disabe the source lookup and fill zeros into destination. Then add the `*_offset` by the amount of bytes we process at a step, and subtract `bytes_left` also by it, then propagate them to next step.
+Then, in every step we check if `src_offset < src_end`, if not, we need to disable the source lookup and fill zeros into destination. Then add the `*_offset` by the amount of bytes we process at a step, and subtract `bytes_left` also by it, then propagate them to next step.
 
 ## Conclusion
 
