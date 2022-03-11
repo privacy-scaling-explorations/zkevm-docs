@@ -4,15 +4,15 @@
 
 # Introduction
 
-EVM circuit iterates over transactions included in proof to verify each execution step of transaction is valid. Basically the scale of a step is same as in EVM, so usually we handle one opcode per step, except those opcodes like `SHA3` or `CALLDATACOPY` that operate on variable size of memory would require multiple steps.
+EVM circuit iterates over transactions included in the proof to verify that each execution step of a transaction is valid. Basically the scale of a step is the same as in the EVM, so usually we handle one opcode per step, except those opcodes like `SHA3` or `CALLDATACOPY` that operate on variable size of memory, which would require multiple "virtual" steps.
 
 > The scale of a step somehow could be different depends on the approach, an extreme case is to implement a VM with reduced instruction set (like TinyRAM) to emulate EVM, which would have a much smaller step, but not sure how it compares to current approach.
 > 
 > **han**
 
-To verify if a step is valid, we first enumerate all possible execution results of a step in the EVM including success and error cases, and then build the custom constraint to verify the step transition is correct for each execution result.
+To verify if a step is valid, we first enumerate all possible execution results of a step in the EVM including success and error cases, and then build a custom constraint to verify that the step transition is correct for each execution result.
 
-In each step, we constrain it to enable one of execution results, and specially constrain the first step to enable `BEGIN_TX`, then repeats the step to verify the full execution trace. Also each step is given access to next step to propagate the tracking information, by putting constraints like `assert next.program_counter == curr.program_counter + 1`.
+For each step, we constrain it to enable one of the execution results, and specially, to constrain the first step to enable `BEGIN_TX`, which then repeats the step to verify the full execution trace. Also each step is given access to next step to propagate the tracking information, by putting constraints like `assert next.program_counter == curr.program_counter + 1`.
 
 # Concepts
 
@@ -55,12 +55,12 @@ flowchart LR
 ```
 
 - **BeginTx**:
-    - beginning of a transaction.
+    - Beginning of a transaction.
 - **EVMExecStates** = [ SuccessStep | ReturnStep ]
 - **SuccessStep** = [ ExecStep | ExecMetaStep | ExecSubStep ]
-    - set of states that suceed and continue the execution within the call.
+    - Set of states that suceed and continue the execution within the call.
 - **ReturnStep** = [ ExplicitReturn | Error ]
-    - set of states that halt the execution of a call and return to the caller
+    - Set of states that halt the execution of a call and return to the caller
       or go to the next tx.
 - **ExecStep**: 
     - 1-1 mapping with a GethExecStep for opcodes that map to a single gadget
@@ -69,52 +69,54 @@ flowchart LR
     - N-1 mapping with a GethExecStep for opcodes that share the same gadget
       (due to similarity) with a single step.  For example `{ADD, SUB}`,
       `{PUSH*}`, `{DUP*}` and `{SWAP*}`.
+      A good example on how these are grouped is the `StackOnlyOpcode` struct.
 - **ExecSubStep**: 
     - 1-N mapping with a GethExecStep for opcodes that deal with dynamic size
       arrays for which multiple steps are generated.
         - `CALLDATACOPY` -> CopyToMemory
         - `RETURNDATACOPY` -> TODO
         - `CODECOPY` -> TODO
-        - `EXTCODECOPY` -> TODO
-        - `SHA3` -> TODO
+        - `EXTCODECOPY` -> IN PROGRESS
+        - `SHA3` -> IN PROGRESS
         - `LOGN` -> CopyToLog
 - **ExplicitReturn**: 
     - 1-1 mapping with a GethExecStep for opcodes that return from a call
       without exception.
 - **Error** = [ ErrorEnoughGas | ErrorOutOfGas ]
-    - set of states that are associated with exceptions caused by opcodes.
+    - Set of states that are associated with exceptions caused by opcodes.
 - **ErrorEnoughGas**: 
-    - set of error states that are unrelated to out of gas.  Example:
+    - Set of error states that are unrelated to out of gas.  Example:
       `InvalidOpcode`, `StackOverflow`, `InvalidJump`.
 - **ErrorOutOfGas**: 
-    - set of error states for opcodes that run out of gas.  For each opcode
+    - Set of error states for opcodes that run out of gas. For each opcode
       (sometimes group of opcodes) that has dynamic memory gas usage, there is
       a specific **ErrorOutOfGas** error state.
 - **EndTx**
-    - end of a transaction.
+    - End of a transaction.
 - **EndBlock**
-    - end of a block (serves also as padding for the rest of the state step slots)
+    - End of a block (serves also as padding for the rest of the state step slots)
 
 
-> In current implementation, we ask opcode implementer to also implement error cases, which seems to be redundant efforts. If we do this, they can focus more on opcode's success case. Also error cases are usually easier to verify, so I think it also reduces the overall implementation complexity.
+> In the current implementation, we ask the opcode implementer to also implement error cases, which seems to be a redundant effort. 
+> But by doing this, they can focus more on opcode's success case. Also error cases are usually easier to verify, so I think it also reduces the overall implementation complexity.
 > 
 > **han**
 
-## Random accessible data
+## Random access data
 
-In EVM, the interpreter has ability to do any random access to data like block context, account balance, stack and memory in current scope, etc... And some of them are read-write and others are read-only.
+In EVM, the interpreter has the ability to do any random access to data like block context, account balance, stack and memory in current scope, etc... Some of these access are read-write and others are read-only.
 
-In EVM circuit, we leverage the concept [Circuit as a lookup table](#Circuit-as-a-lookup-table) to duplicate these random accessible data to other circuits in different layout and verify they are consistent and valid. After these random accessible data are verified, we can use them just like they are tables. [Here](https://github.com/appliedzkp/zkevm-specs/blob/83ad4ed571/src/zkevm_specs/evm/table.py#L108) are the tables currently used in EVM circuit.
+In EVM circuit, we leverage the concept [Circuit as a lookup table](#Circuit-as-a-lookup-table) to duplicate these random data access to other circuits in a different layout and verify that they are consistent and valid. After these random data access are verified, we can use them just as if they were only tables. [Here](https://github.com/appliedzkp/zkevm-specs/blob/83ad4ed571/src/zkevm_specs/evm/table.py#L108) are the tables currently used in the EVM circuit.
 
-For read-write accessible data, EVM circuit lookup State circuit with a sequentially `rw_counter` (read-write counter) to make sure the read-write access is chronological, and a flag `is_write` to have State circuit to check data is consistency between different write accesses.
+For read-write access data, EVM circuit looks up State circuit with a sequentially `rw_counter` (read-write counter) to make sure the read-write access is chronological. It also uses a flag `is_write` to check data consistency between different write access.
 
-For read-only accessible data, EVM circuit lookup Bytecode circuit, Tx circuit, Call circuit directly.
+For read-only access data, EVM circuit looks-up Bytecode circuit, Tx circuit and Call circuit directly.
 
 ## State write reversion
 
-In EVM, state write could be reverted if any call fails. There are many kinds of state write, a complete list can be found [here](https://github.com/ethereum/go-ethereum/blob/master/core/state/journal.go#L87-L141).
+In EVM, state writes can be reverted if any call fails. There are many kinds of state writes, a complete list can be found [here](https://github.com/ethereum/go-ethereum/blob/master/core/state/journal.go#L87-L141).
 
-In EVM circuit, each call is attached with a flag`is_persistent` to know if it succeeds in the end or not, so ideally we only need to do reversion on those kinds of state write which affects future execution before reversion:
+In EVM circuit, each call is attached with a flag (`is_persistent`) to know if it succeeds or not. So ideally, we only need to do reversion on those kinds of state writes which affect future execution before reversion:
 
 - `TxAccessListAccount`
 - `TxAccessListStorageSlot`
@@ -123,7 +125,7 @@ In EVM circuit, each call is attached with a flag`is_persistent` to know if it s
 - `AccountCodeHash`
 - `AccountStorage`
 
-Others we don't need to do reversion because they don't affect future execution before reversion, we only write them when `is_persistent` is `1`:
+On some others we don't need to do reversion because they don't affect future execution before reversion, we only write them when `is_persistent` is `1`:
 
 - `TxRefund`
 - `AccountDestructed`
@@ -134,9 +136,9 @@ Others we don't need to do reversion because they don't affect future execution 
 
 To enable state write reversion, we need some meta information of a call:
 
-1. `is_persistent` - To know if we need reversion or not
-2. `rw_counter_end_of_reversion` - To know at which point in the future we should revert
-3. `state_write_counter` - To know how many state write we have done by now
+1. `is_persistent` - To know if we need reversion or not.
+2. `rw_counter_end_of_reversion` - To know at which point in the future we should revert.
+3. `state_write_counter` - To know how many state writes we have done until now.
 
 Then at each state write, we first check if `is_persistent` is `0`, if so we do an extra state write at `rw_counter_end_of_reversion - state_write_counter` with the old value, which reverts the state write in a reverse order.
 
@@ -148,18 +150,23 @@ For more notes on state write reversion see:
 
 In EVM circuit, there are 3 kinds of opcode source for execution or copy:
 
-1. When contract interaction:
+1. Contract interaction:
     Opcode is lookup from contract bytecode in Bytecode circuit by tuple `(code_hash, index, opcode)`
-2. When contract creation in root call:
+2. Contract creation in root call:
     Opcode is lookup from tx calldata in Tx circuit by tuple `(tx_id, TxTableTag.Calldata, index, opcode)`
-3. When contract creation in internal call:
+3. Contract creation in internal call:
     Opcode is lookup from caller's memory in State circuit by tuple `(rw_counter, False, caller_id, index, opcode)`
 
 Before we fetch opcode from any source, it checks if the index is in the given range, if not, it follows the behavior of current EVM to implicitly returning `0`.
 
 ## Internal call
 
-EVM supports internal call triggered by opcodes. In EVM circuit, the opcodes (like `CALL` or `CREATE`) that trigger internal call will save its own `call_state` into State circuit, setup next call's context, and initialize next step's `call_state` to start a new environment. Then the opcodes (like `RETURN` or `REVERT`) and error cases that halt will restore caller's `call_state` and set it back to next step.
+EVM supports internal call triggered by opcodes. In EVM circuit, the opcodes (like `CALL` or `CREATE`) that trigger internal call, will:
+- Save their own `call_state` into State circuit.
+- Setup next call's context.
+- Initialize next step's `call_state` to start a new environment. 
+
+Then the opcodes (like `RETURN` or `REVERT`) and error cases that halt, will restore caller's `call_state` and set it back to next step.
 
 For a simple `CALL` example with illustration (many details are hided for simplicity):
 

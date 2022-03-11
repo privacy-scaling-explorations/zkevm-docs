@@ -6,35 +6,31 @@
 
 ## Architecture diagram
 
-Each circuit is layouted to be friendly to build their own custom constraints. When circuits encounter some expensive operations, they can outsource the effort to other circuits by lookup. The relationship between circuits would be like:
+Each circuit is layouted to be capable to build their own custom constraints. When circuits encounter some expensive operations, they can outsource the effort to other circuits by through the usage of lookup arguments. 
+The relationship between circuits looks like:
 
 ![](./architecture_diagram2.png)
 
 In the end the circuits would be assembled depending on their dimension and the desired capacity. For example, we can just combine 2 different circuits by using different columns, or stack them using same columns with extra selectors.
 
 In order to reduce the time required to build a proof of a full block and to
-simplify the verification step, we will build an aggregation circuit that in
-turn verifies the proofs of each sub-circuit shown in the diagram.  See [Design
+simplify the verification step, an aggregation circuit is being build so that condenses the
+ verification of each sub-circuit proofs shown in the diagram.  See [Design
 Notes, Recursion](./design/recursion.md) for details on the recursion strategy
 used in the aggregation circuit.
 
 ## Circuit as a lookup table
 
-In halo2, the lookup is flexible to be configured, anything able to be turned into `Expression` could used to be `item: Tuple[int, ...]` or `table: Set[Tuple[int, ...]]` in lookup, and then it `assert item in table`. The `Expression` includes constant, queried fixed, advice or instance column at arbitrary rotation, addition/multiplication of `Expression`.
+In halo2, the lookup is flexible to be configured. Anything able to be turned into `Expression` could be used as `item: Tuple[int, ...]` or `table: Set[Tuple[int, ...]]` in lookup. Enabling `assert item in table`. The `Expression` includes `Constant`, `Fixed`, `Advice` or `Instance` column at arbitrary rotation.
 
-The motivation to have multiple circuits as lookup tables is because EVM contains many circuit unfriendly operation like random read-write data access, wrong field operation (ECDSA on secp256k1), traditional hash function (keccak256), etc... And many of them accept variable lenght input.
+The motivation to have multiple circuits as lookup tables is that EVM contains many circuit unfriendly operations like random read-write data access, "wrong" field operation (ECDSA on secp256k1), traditional hash functions like `keccak256`, etc... And many of them accept variable lenght input.
 
-These expensive operations makes it hard to design a EVM circuit to verify computation trace because each step could possibly contain some of them. So we try to separate these expensive operations to other single-purpose circuits which have more friendly layout, and use them by a lookup (or serveral lookups) to communicate input and output to outsource the effort.
+These expensive operations make it hard to design an EVM circuit to verify computation traces because each step could possibly contain some of the operations mentioned above. So we tried to separate these expensive operations into single-purpose circuits which have a more friendly layout, and use them via lookups to communicate it's input and output, Outsourcing the effort.
 
-The reason lookup with input and output could be used to outsource the effort is that we know the table lookup-ed is configured with constraints to verify the input and output are in some relationship. For example, we let Bytecode circuit to holds a set of tuple `(code_hash, index, opcode)`, and each `code_hash` is verified to be the keccak256 digest of opcodes it contains, then in EVM circuit we can load `opcode` with `(code_hash, program_counter)` by lookup to Bytecode circuit.
+The reason input-output lookups could be used to outsource the effort is that we know the that the lookup-ed table is configured with constraints to verify the input and output are in some relationship. For example, we let Bytecode circuit to hold a set of tuple `(code_hash, index, opcode)`, and each `code_hash` is verified to be the keccak256 digest of opcodes it contains, then in EVM circuit we can load `opcode` with `(code_hash, program_counter)` by looking up the Bytecode table.
 
-However, sometimes there are some properties we can't ensure by only lookups. For example, the amount of all `item` should equal to the size of `table`, which is required by between EVM circuit and State circuit to prevent extra malicious write. In such case (`assert set(items) == table`), we need some extra constraint to ensure the relationship is correct. A naive approach is to also count all `item` in State circuit, which in the end is the size of the `table`, and constraint it to be equal to the one counted in EVM circuit.
+However, sometimes there are some properties we can't ensure only with lookups. For example, the amount of all `item` should equal to the size of `table`, which is required by between EVM circuit and State circuit to prevent extra malicious write. In such case (`assert set(items) == table`), we need some extra constraint to ensure the relationship is correct. A naive approach is to also count all `item` in State circuit, which in the end is the size of the `table`, and constraint it to be equal to the one counted in EVM circuit.
 
-> The original approach is using lookup to move the meaningful items from State circuit to bus mapping, which is another private table, and verify the bus mapping has degree bound that eqaul to the one counted in EVM circuit.
-> But it turns out that we also need to count in State circuit, otherwise the prover could insert something in bus mapping but skip it in State circuit. We can try to do lookup from bus mapping to State circuit to avoid the counting in State circuit, but it just makes bus mapping seem to be a redundant layer.
-> In general, such case is more like reorder something to be friendly to perform other constraint instead of subset, which should be easy to add in halo2 since subset argument already uses such shuffle argument. But for flexibility, we might have multiple lookup to State circuit like `assert set(items1).intersection(set(items2)) == {0} and set(items1) + set(items2) == table`) , which is not a simple shuffle, so counting items in State circuit seems to be a more general solution.
-> 
-> **han**
 
 ## EVM word encoding
 
