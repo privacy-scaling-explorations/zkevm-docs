@@ -4,7 +4,7 @@ This is the documentation of the AppliedZKP's team design of the zkEVM.
 
 This documentation is written in markdown and organized into an
 [mdbook](https://github.com/rust-lang/mdBook) which can be [viewed
-here](https://ed255.github.io/zkevm-docs/).
+here](https://appliedzkp.github.io/zkevm-docs/).
 
 # Setup
 
