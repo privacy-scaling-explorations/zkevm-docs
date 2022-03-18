@@ -1,6 +1,6 @@
-# AppliedZKP's zkEVM Documentation
+# zkEVM Documentation
 
-This is the documentation of the AppliedZKP's team design of the zkEVM.
+This is the documentation of the design and specification of the zkEVM.
 
 This documentation is written in markdown and organized into an
 [mdbook](https://github.com/rust-lang/mdBook) which can be [viewed

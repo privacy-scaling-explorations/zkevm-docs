@@ -2,7 +2,10 @@
 
 The zkEVM aims to specify and implement a solution to validate Ethereum blocks
 via zero knowledge proofs.  The project aims to achieve 100% compatibility with
-the Ethereum's EVM.
+the Ethereum's EVM. It's an open-source project that is contributed and owned
+by the community. Check out the contributors at
+[here](https://github.com/appliedzkp/zkevm-circuits/graphs/contributors) and
+[here](https://github.com/appliedzkp/zkevm-specs/graphs/contributors).
 
 This book contains general documentation of the project.
 
@@ -40,4 +43,4 @@ other parts which are already implemented may be changed in the future.
 
 - [Implementation](https://github.com/appliedzkp/zkevm-circuits)
 - [Specification](https://github.com/appliedzkp/zkevm-specs)
-- [AppliedZKP organization](https://github.com/appliedzkp)
+
