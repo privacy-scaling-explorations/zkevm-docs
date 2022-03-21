@@ -1,6 +1,7 @@
-# zkEVM Documentation
+# zkEVM (Community Edition) Documentation
 
-This is the documentation of the design and specification of the zkEVM.
+This is the documentation of the design and specification of the zkEVM
+community edition.
 
 This documentation is written in markdown and organized into an
 [mdbook](https://github.com/rust-lang/mdBook) which can be [viewed

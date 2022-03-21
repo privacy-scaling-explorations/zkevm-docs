@@ -1,9 +1,9 @@
 [book]
-authors = ["The zkEVM team"]
+authors = ["The zkEVM community"]
 language = "en"
 multilingual = false
 src = "src"
-title = "zkEVM Documentation"
+title = "zkEVM (Community Edition) Documentation"
 
 [preprocessor]
 
