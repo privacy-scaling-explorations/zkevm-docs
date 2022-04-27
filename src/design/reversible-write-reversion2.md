@@ -1,10 +1,10 @@
-# State Write Reversion Note 2
+# Reversible Write Reversion Note 2
 
 # ZKEVM - State Circuit Extension - `StateDB`
 
 ## Reversion
 
-In EVM, there are multiple kinds of `StateDB` update that could be reverted when any internal call fails. 
+In EVM, there are multiple kinds of `StateDB` updates that could be reverted when any internal call fails.
 
 - `tx_access_list_account` - `(tx_id, address) -> accessed`
 - `tx_access_list_storage_slot` - `(tx_id, address, storage_slot) -> accessed`
@@ -24,7 +24,7 @@ The complete list can be found [here](https://github.com/ethereum/go-ethereum/bl
 
 The actions that write to the `StateDB` inside the red box will also revert themselves in the revert section (red circle), but in reverse order.
 
-Each call needs to know its `rw_counter_end_of_revert_section` to revert with the correct `rw_counter`. If callee is a success call but in some red box (`is_persistent=0`), we need to copy caller's `rw_counter_end_of_revert_section` and `state_write_counter` to callee's.
+Each call needs to know its `rw_counter_end_of_revert_section` to revert with the correct `rw_counter`. If callee is a success call but in some red box (`is_persistent=0`), we need to copy caller's `rw_counter_end_of_revert_section` and `reversible_write_counter` to callee's.
 
 ## `SELFDESTRUCT`
 

@@ -7,7 +7,7 @@
 EVM circuit iterates over transactions included in the proof to verify that each execution step of a transaction is valid. Basically the scale of a step is the same as in the EVM, so usually we handle one opcode per step, except those opcodes like `SHA3` or `CALLDATACOPY` that operate on variable size of memory, which would require multiple "virtual" steps.
 
 > The scale of a step somehow could be different depends on the approach, an extreme case is to implement a VM with reduced instruction set (like TinyRAM) to emulate EVM, which would have a much smaller step, but not sure how it compares to current approach.
-> 
+>
 > **han**
 
 To verify if a step is valid, we first enumerate all possible execution results of a step in the EVM including success and error cases, and then build a custom constraint to verify that the step transition is correct for each execution result.
@@ -62,15 +62,15 @@ flowchart LR
 - **ReturnStep** = [ ExplicitReturn | Error ]
     - Set of states that halt the execution of a call and return to the caller
       or go to the next tx.
-- **ExecStep**: 
+- **ExecStep**:
     - 1-1 mapping with a GethExecStep for opcodes that map to a single gadget
       with a single step.  Example: `ADD`, `MUL`, `DIV`, `CREATE2`.
-- **ExecMetaStep**: 
+- **ExecMetaStep**:
     - N-1 mapping with a GethExecStep for opcodes that share the same gadget
       (due to similarity) with a single step.  For example `{ADD, SUB}`,
       `{PUSH*}`, `{DUP*}` and `{SWAP*}`.
       A good example on how these are grouped is the `StackOnlyOpcode` struct.
-- **ExecSubStep**: 
+- **ExecSubStep**:
     - 1-N mapping with a GethExecStep for opcodes that deal with dynamic size
       arrays for which multiple steps are generated.
         - `CALLDATACOPY` -> CopyToMemory
@@ -79,15 +79,15 @@ flowchart LR
         - `EXTCODECOPY` -> IN PROGRESS
         - `SHA3` -> IN PROGRESS
         - `LOGN` -> CopyToLog
-- **ExplicitReturn**: 
+- **ExplicitReturn**:
     - 1-1 mapping with a GethExecStep for opcodes that return from a call
       without exception.
 - **Error** = [ ErrorEnoughGas | ErrorOutOfGas ]
     - Set of states that are associated with exceptions caused by opcodes.
-- **ErrorEnoughGas**: 
+- **ErrorEnoughGas**:
     - Set of error states that are unrelated to out of gas.  Example:
       `InvalidOpcode`, `StackOverflow`, `InvalidJump`.
-- **ErrorOutOfGas**: 
+- **ErrorOutOfGas**:
     - Set of error states for opcodes that run out of gas. For each opcode
       (sometimes group of opcodes) that has dynamic memory gas usage, there is
       a specific **ErrorOutOfGas** error state.
@@ -97,9 +97,9 @@ flowchart LR
     - End of a block (serves also as padding for the rest of the state step slots)
 
 
-> In the current implementation, we ask the opcode implementer to also implement error cases, which seems to be a redundant effort. 
+> In the current implementation, we ask the opcode implementer to also implement error cases, which seems to be a redundant effort.
 > But by doing this, they can focus more on opcode's success case. Also error cases are usually easier to verify, so I think it also reduces the overall implementation complexity.
-> 
+>
 > **han**
 
 ## Random access data
@@ -112,11 +112,11 @@ For read-write access data, EVM circuit looks up State circuit with a sequential
 
 For read-only access data, EVM circuit looks-up Bytecode circuit, Tx circuit and Call circuit directly.
 
-## State write reversion
+## Reversible write reversion
 
-In EVM, state writes can be reverted if any call fails. There are many kinds of state writes, a complete list can be found [here](https://github.com/ethereum/go-ethereum/blob/master/core/state/journal.go#L87-L141).
+In EVM, reversible writes can be reverted if any call fails. There are many kinds of reversible writes, a complete list can be found [here](https://github.com/ethereum/go-ethereum/blob/master/core/state/journal.go#L87-L141).
 
-In EVM circuit, each call is attached with a flag (`is_persistent`) to know if it succeeds or not. So ideally, we only need to do reversion on those kinds of state writes which affect future execution before reversion:
+In EVM circuit, each call is attached with a flag (`is_persistent`) to know if it succeeds or not. So ideally, we only need to do reversion on these kinds of reversible writes which affect future execution before reversion:
 
 - `TxAccessListAccount`
 - `TxAccessListStorageSlot`
@@ -131,20 +131,20 @@ On some others we don't need to do reversion because they don't affect future ex
 - `AccountDestructed`
 
 > Another tag is `TxLog`, which also doesn't affect future execution. It should be explained where to write such record to after we decide where to build receipt trie.
-> 
+>
 > **han**
 
-To enable state write reversion, we need some meta information of a call:
+To enable reversible write reversion, we need some meta information of a call:
 
 1. `is_persistent` - To know if we need reversion or not.
 2. `rw_counter_end_of_reversion` - To know at which point in the future we should revert.
-3. `state_write_counter` - To know how many state writes we have done until now.
+3. `reversible_write_counter` - To know how many reversible writes we have done until now.
 
-Then at each state write, we first check if `is_persistent` is `0`, if so we do an extra state write at `rw_counter_end_of_reversion - state_write_counter` with the old value, which reverts the state write in a reverse order.
+Then at each reversible write, we first check if `is_persistent` is `0`, if so we do an extra reversible write at `rw_counter_end_of_reversion - reversible_write_counter` with the old value, which reverts the reversible write in a reverse order.
 
-For more notes on state write reversion see:
-- [Design Notes, State Write Reversion Note 1](../design/state-write-reversion.md)
-- [Design Notes, State Write Reversion Note 2](../design/state-write-reversion2.md)
+For more notes on reversible write reversion see:
+- [Design Notes, Reversible Write Reversion Note 1](../design/reversible-write-reversion.md)
+- [Design Notes, Reversible Write Reversion Note 2](../design/reversible-write-reversion2.md)
 
 ## Opcode fetching
 
@@ -164,7 +164,7 @@ Before we fetch opcode from any source, it checks if the index is in the given r
 EVM supports internal call triggered by opcodes. In EVM circuit, the opcodes (like `CALL` or `CREATE`) that trigger internal call, will:
 - Save their own `call_state` into State circuit.
 - Setup next call's context.
-- Initialize next step's `call_state` to start a new environment. 
+- Initialize next step's `call_state` to start a new environment.
 
 Then the opcodes (like `RETURN` or `REVERT`) and error cases that halt, will restore caller's `call_state` and set it back to next step.
 
