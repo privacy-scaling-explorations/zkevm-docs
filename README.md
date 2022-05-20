@@ -5,7 +5,7 @@ community edition.
 
 This documentation is written in markdown and organized into an
 [mdbook](https://github.com/rust-lang/mdBook) which can be [viewed
-here](https://appliedzkp.github.io/zkevm-docs/).
+here](https://privacy-scaling-explorations.github.io/zkevm-docs/).
 
 # Setup
 
