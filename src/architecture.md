@@ -24,7 +24,7 @@ List of circuits and tables they generate/verify:
 | [Keccak Circuit](./architecture/keccak-circuit.md)     | Keccak Table                                                                                           |
 | [ECDSA Circuit](./architecture/ecdsa-circuit.md)       | ECDSA Table                                                                                            |
 
-In the end the circuits would be assembled depending on their dimension and the desired capacity. For example, we can just combine 2 different circuits by using different columns, or stack them using same columns with extra selectors.
+In the end, the circuits would be assembled depending on their dimension and the desired capacity. For example, we can just combine 2 different circuits by using different columns, or stack them using same columns with extra selectors.
 
 In order to reduce the time required to build a proof of a full block and to
 simplify the verification step, an aggregation circuit is being build so that condenses the
