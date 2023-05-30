@@ -1,0 +1,489 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Multi-Step Implementation - zkEVM (Community Edition) Documentation</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../../architecture.html"><strong aria-hidden="true">2.</strong> Circuit Architecture</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../architecture/evm-circuit.html"><strong aria-hidden="true">2.1.</strong> EVM Circuit</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../architecture/evm-circuit/opcode-fetching.html"><strong aria-hidden="true">2.1.1.</strong> Opcode Fetching</a></li><li class="chapter-item expanded "><a href="../../architecture/evm-circuit/multi-step.html" class="active"><strong aria-hidden="true">2.1.2.</strong> Multi-Step Implementation</a></li></ol></li><li class="chapter-item expanded "><a href="../../architecture/tx-circuit.html"><strong aria-hidden="true">2.2.</strong> Tx Circuit</a></li><li class="chapter-item expanded "><a href="../../architecture/state-circuit.html"><strong aria-hidden="true">2.3.</strong> State Circuit</a></li><li class="chapter-item expanded "><a href="../../architecture/bytecode-circuit.html"><strong aria-hidden="true">2.4.</strong> Bytecode Circuit</a></li><li class="chapter-item expanded "><a href="../../architecture/ecdsa-circuit.html"><strong aria-hidden="true">2.5.</strong> ECDSA Circuit</a></li><li class="chapter-item expanded "><a href="../../architecture/keccak-circuit.html"><strong aria-hidden="true">2.6.</strong> Keccak Circuit</a></li><li class="chapter-item expanded "><a href="../../architecture/mpt-circuit.html"><strong aria-hidden="true">2.7.</strong> Merkle Patricia Tree Circuit</a></li></ol></li><li class="chapter-item expanded "><a href="../../design.html"><strong aria-hidden="true">3.</strong> Design Notes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../design/random-linear-combinaion.html"><strong aria-hidden="true">3.1.</strong> Random Linear Combination</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../design/random-linear-combinaion/full-runnable-code.html"><strong aria-hidden="true">3.1.1.</strong> Full Runnable Code</a></li></ol></li><li class="chapter-item expanded "><a href="../../design/recursion.html"><strong aria-hidden="true">3.2.</strong> Recursion</a></li><li class="chapter-item expanded "><a href="../../design/reversible-write-reversion.html"><strong aria-hidden="true">3.3.</strong> Reversible Write Reversion Note 1</a></li><li class="chapter-item expanded "><a href="../../design/reversible-write-reversion2.html"><strong aria-hidden="true">3.4.</strong> Reversible Write Reversion Note 2</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">zkEVM (Community Edition) Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <style>
+#wide-table table {
+    white-space: nowrap;
+    width: 120%;
+    transform: translateX(-10%);
+}
+</style>
+<h1 id="multi-step-implementation"><a class="header" href="#multi-step-implementation">Multi-Step Implementation</a></h1>
+<ul>
+<li><a href="#introduction">Introduction</a>
+<ul>
+<li><a href="#approaches">Approaches</a>
+<ul>
+<li><a href="#approach-1---given-access-to-previous-step">Approach #1 - Given access to previous step</a></li>
+<li><a href="#approach-2---introduce-internal-executionstate">Approach #2 - Introduce internal <code>ExecutionState</code></a></li>
+</ul>
+</li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<p>In EVM, there are serveral opcodes moving dynamic-length bytes around between different sources, here is a complete list:</p>
+<div id="wide-table">    
+<table>
+<thead>
+<tr>
+<th><span>Type</span></th>
+<th><span>Opcode</span></th>
+<th><span>Source</span></th>
+<th><span>Destination</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan="3"><span>1</span></td>
+<td><code>CODECOPY</code><br><code>EXTCODECOPY</code></td>
+<td><code>bytecode[code_hash]</code></td>
+<td><code>calls[call_id].memory</code></td>
+</tr>
+<tr>
+<td><code>CALLDATACOPY and is_root</code></td>
+<td><code>txs[tx_id].calldata</code></td>
+<td><code>calls[call_id].memory</code></td>
+</tr>
+<tr>
+<td><code>CALLDATACOPY and not_root</code></td>
+<td><code>calls[caller_call_id].memory</code></td>
+<td><code>calls[call_id].memory</code></td>
+</tr>
+<tr>
+<td><span>2</span></td>
+<td><code>RETURNDATACOPY</code></td>
+<td><code>calls[callee_call_id].memory</code></td>
+<td><code>calls[call_id].memory</code></td>
+</tr>
+<tr>
+<td rowspan="2">3</span></td>
+<td><code>RETURN and is_create</code><br><code>CREATE</code><br><code>CREATE2</code></td>
+<td><code>calls[call_id].memory</code></td>
+<td><code>bytecode[code_hash]</code></td>
+</tr>
+<tr>
+<td><code>SHA3</code></td>
+<td><code>calls[call_id].memory</code></td>
+<td><span>TBD</span></td>
+</tr>
+<tr>
+<td rowspan="2">4</span></td>
+<td><code>RETURN and not_create</code></td>
+<td><code>calls[call_id].memory</code></td>
+<td><code>calls[caller_call_id].memory</code></td>
+</tr>
+<tr>
+<td><code>REVERT and not_create</code></td>
+<td><code>calls[call_id].memory</code></td>
+<td><code>calls[caller_call_id].memory</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>With illustration:</p>
+<p><img src="./multi-step_diagram.png" alt="" /></p>
+<p>There could be classified to be 4 types:</p>
+<ol>
+<li><code>* -&gt; memory (padding)</code>
+<ul>
+<li>Including:
+<ul>
+<li><code>CALLDATACOPY</code></li>
+<li><code>CODECOPY</code></li>
+<li><code>EXTCODECOPY</code></li>
+</ul>
+</li>
+<li>Copy from calldata or code to current memory.</li>
+<li>Memory gets filled with 0's when copied out of source's range, in other words, source is padded with 0's to the range.</li>
+</ul>
+</li>
+<li><code>* -&gt; memory (no padding)</code>
+<ul>
+<li>Including <code>RETURNDATACOPY</code>.</li>
+<li>Similar to Type 1, but the range is explicitly checked to be in source's range, otherwise the EVM halts with exception. So no padding issue.</li>
+</ul>
+</li>
+<li><code>memory -&gt; * (no range capped)</code>
+<ul>
+<li>Including:
+<ul>
+<li><code>RETURN</code> when <code>is_create</code></li>
+<li><code>CREATE</code></li>
+<li><code>CREATE2</code></li>
+<li><code>SHA3</code></li>
+</ul>
+</li>
+<li>Copy from current memory to destination.</li>
+<li>No padding issue since memory is always expanded implicitly due to lazy initialization.</li>
+</ul>
+</li>
+<li><code>memory -&gt; * (range capped)</code>
+<ul>
+<li>Including:
+<ul>
+<li><code>RETURN</code> when <code>not_create</code></li>
+<li><code>REVERT</code> when <code>not_create</code></li>
+</ul>
+</li>
+<li>Similar to Type 3, but the range is capped by caller's assignment.</li>
+</ul>
+</li>
+</ol>
+<h2 id="approaches"><a class="header" href="#approaches">Approaches</a></h2>
+<h3 id="approach-1---given-access-to-previous-step"><a class="header" href="#approach-1---given-access-to-previous-step">Approach #1 - Given access to previous step</a></h3>
+<p>Take <code>CALLDATALOAD</code> as an example, in the <a href="https://github.com/appliedzkp/zkevm-specs/blob/2864c3f0f6cb905b8548da9cde76fea13a42085f/src/zkevm_specs/evm/execution_result/calldatacopy.py">approach</a> by @icemelon, it requires access to previous step to infer what's the state of current step, to know if the step is the first step, we check</p>
+<ol>
+<li><code>curr.opcode == CALLDATALOAD</code></li>
+<li><code>prev.execution_state != CALLDATALOAD or prev.finished is True</code></li>
+</ol>
+<p>And it transit the <code>StepState</code> at the last step, which is inferred from if the bytes left to copy is less then a step's amount.</p>
+<h3 id="approach-2---introduce-internal-executionstate"><a class="header" href="#approach-2---introduce-internal-executionstate">Approach #2 - Introduce internal <code>ExecutionState</code></a></h3>
+<p>This approach introduce internal <code>ExecutionState</code> with extra constraint of <code>ExecutionState</code> transition, and the inputs will be passed by constraint from previous step. The new <code>ExecutionState</code> are:</p>
+<ul>
+<li>
+<p><code>CopyMemoryToMemory</code></p>
+<ul>
+<li>Can only transited from:
+<ul>
+<li><code>RETURN</code></li>
+<li><code>REVERT</code></li>
+<li><code>CALLDATACOPY</code></li>
+<li><code>RETURNDATACOPY</code></li>
+</ul>
+</li>
+<li>Inputs:
+<ul>
+<li><code>src_call_id</code> - id of source call (to be read)</li>
+<li><code>dst_call_id</code> - id of destination call (to be written)</li>
+<li><code>src_end</code> - end of source, it returns <code>0</code> when indexing out of this.</li>
+<li><code>src_offset</code> - memory offset of source call</li>
+<li><code>dst_offset</code> - memory offset of destination call</li>
+<li><code>bytes_left</code> - how many bytes left to copy</li>
+</ul>
+</li>
+<li>Note:
+<ul>
+<li>The <code>src_end</code> is only used by <code>CALLDATACOPY</code> since only it needs padding.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>CopyTxCalldataToMemory</code></p>
+<ul>
+<li>Can only transited from <code>CALLDATACOPY</code></li>
+<li>Inputs:
+<ul>
+<li><code>tx_id</code> - id of current tx</li>
+<li><code>src_end</code> - end of source, it returns <code>0</code> when indexing out of this</li>
+<li><code>src_offset</code> - calldata offset of tx</li>
+<li><code>dst_offset</code> - memory offset of current call</li>
+<li><code>bytes_left</code> - how many bytes left to copy</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>CopyBytecodeToMemory</code></p>
+<ul>
+<li>Can only transited from:
+<ul>
+<li><code>CODECOPY</code></li>
+<li><code>EXTCODECOPY</code></li>
+</ul>
+</li>
+<li>Inputs:
+<ul>
+<li><code>code_hash</code> - hash of bytecode</li>
+<li><code>src_end</code> - end of source, it returns <code>0</code> when indexing out of this</li>
+<li><code>src_offset</code> - calldata offset of tx</li>
+<li><code>dst_offset</code> - memory offset of current call</li>
+<li><code>bytes_left</code> - how many bytes left to copy</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>CopyMemoryToBytecode</code></p>
+<ul>
+<li>Can only transited from:
+<ul>
+<li><code>CREATE</code> - copy init code</li>
+<li><code>CREATE2</code> - copy init code</li>
+<li><code>RETURN</code> - copy deployment code</li>
+</ul>
+</li>
+<li>Inputs:
+<ul>
+<li><code>code_hash</code> - hash of bytecode</li>
+<li><code>src_offset</code> - calldata offset of tx</li>
+<li><code>dst_offset</code> - memory offset of current call</li>
+<li><code>bytes_left</code> - how many bytes left to copy</li>
+</ul>
+</li>
+<li>Note
+<ul>
+<li>This differs from <code>CopyBytecodeToMemory</code> in that it doesn't have padding.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>If we can have a better way to further generalize these inner <code>ExecutionState</code>, we can have less redundant implementation.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>And they do the bytes copy with range check specified by trigger <code>ExecutionState</code>.</p>
+<p>Also these internal <code>ExecutionState</code>s always propagate <code>StepState</code>s as the same value, since the transition is already done by the trigger of <code>ExecutionState</code>.</p>
+<p>Take <code>CALL</code> then <code>CALLDATALOAD</code> as an example:</p>
+<ul>
+<li>Caller executes <code>CALL</code> with stack values (naming referenced from <a href="https://github.com/ethereum/go-ethereum/blob/master/core/vm/instructions.go#L668"><code>instruction.go#L668</code></a>):
+<ul>
+<li><code>inOffset = 32</code></li>
+<li><code>inSize = 32</code></li>
+</ul>
+</li>
+<li>Callee executes <code>CALLDATALOAD</code> with stack values (naming referenced from <a href="https://github.com/ethereum/go-ethereum/blob/master/core/vm/instructions.go#L301-L303"><code>instruction.go#L301-L303</code></a>):
+<ul>
+<li><code>memOffset = 0</code></li>
+<li><code>dataOffset = 64</code></li>
+<li><code>length = 32</code></li>
+</ul>
+</li>
+<li>The first step of <code>CopyMemoryToMemory</code> will receive inputs:
+<ul>
+<li><code>src_call_id = caller_call_id</code></li>
+<li><code>dst_call_id = callee_call_id</code></li>
+<li><code>src_end = inOffset + inSize = 64</code></li>
+<li><code>src_offset = inOffset + dataOffset = 96</code></li>
+<li><code>dst_offset = memOffset = 0</code></li>
+<li><code>bytes_left = length = 32</code></li>
+</ul>
+</li>
+</ul>
+<p>Then, in every step we check if <code>src_offset &lt; src_end</code>, if not, we need to disable the source lookup and fill zeros into destination. Then add the <code>*_offset</code> by the amount of bytes we process at a step, and subtract <code>bytes_left</code> also by it, then propagate them to next step.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>Comparison between the 2 approaches:</p>
+<ul>
+<li>Approach #1
+<ul>
+<li>Pros
+<ul>
+<li>No additional <code>ExecutionState</code></li>
+</ul>
+</li>
+<li>Cons
+<ul>
+<li>Each multi-step opcodes will have at least 3 extra nested branches:
+<ul>
+<li><code>is_first</code> - If the step is the first</li>
+<li><code>not_first</code> - If the step is n-th step</li>
+<li><code>is_final</code> - If the step is final</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Approach #2
+<ul>
+<li>Pros
+<ul>
+<li>Each multi-step opcodes only need to prepare the inputs of those inner <code>ExecutionState</code> and do the correct <code>StepState</code> transition.</li>
+<li>Only 2 nested branches:
+<ul>
+<li><code>not_final</code> - If the step is n-th step</li>
+<li><code>is_final</code> - If the step is final</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Cons
+<ul>
+<li>Additional <code>ExecutionState</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>In the context of current implementation, approach #2 seems easier to implement due to the separation of complexity, and also less prover effort.</p>
+<p>In the context of re-designed EVM circuit (re-use instruction instead of building giant custom gates), it seems no difference on prover effort between the 2 approaches, but approach #2 seems better because it extracts the nested branch and should reduce the usage of rows.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../architecture/evm-circuit/opcode-fetching.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../../architecture/tx-circuit.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../architecture/evm-circuit/opcode-fetching.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../../architecture/tx-circuit.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        <script type="text/javascript" src="../../mermaid.min.js"></script>
+        <script type="text/javascript" src="../../mermaid-init.js"></script>
+    </body>
+</html>

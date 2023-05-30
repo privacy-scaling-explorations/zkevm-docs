@@ -1,0 +1,318 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Recursion - zkEVM (Community Edition) Documentation</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../architecture.html"><strong aria-hidden="true">2.</strong> Circuit Architecture</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../architecture/evm-circuit.html"><strong aria-hidden="true">2.1.</strong> EVM Circuit</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../architecture/evm-circuit/opcode-fetching.html"><strong aria-hidden="true">2.1.1.</strong> Opcode Fetching</a></li><li class="chapter-item expanded "><a href="../architecture/evm-circuit/multi-step.html"><strong aria-hidden="true">2.1.2.</strong> Multi-Step Implementation</a></li></ol></li><li class="chapter-item expanded "><a href="../architecture/tx-circuit.html"><strong aria-hidden="true">2.2.</strong> Tx Circuit</a></li><li class="chapter-item expanded "><a href="../architecture/state-circuit.html"><strong aria-hidden="true">2.3.</strong> State Circuit</a></li><li class="chapter-item expanded "><a href="../architecture/bytecode-circuit.html"><strong aria-hidden="true">2.4.</strong> Bytecode Circuit</a></li><li class="chapter-item expanded "><a href="../architecture/ecdsa-circuit.html"><strong aria-hidden="true">2.5.</strong> ECDSA Circuit</a></li><li class="chapter-item expanded "><a href="../architecture/keccak-circuit.html"><strong aria-hidden="true">2.6.</strong> Keccak Circuit</a></li><li class="chapter-item expanded "><a href="../architecture/mpt-circuit.html"><strong aria-hidden="true">2.7.</strong> Merkle Patricia Tree Circuit</a></li></ol></li><li class="chapter-item expanded "><a href="../design.html"><strong aria-hidden="true">3.</strong> Design Notes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../design/random-linear-combinaion.html"><strong aria-hidden="true">3.1.</strong> Random Linear Combination</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../design/random-linear-combinaion/full-runnable-code.html"><strong aria-hidden="true">3.1.1.</strong> Full Runnable Code</a></li></ol></li><li class="chapter-item expanded "><a href="../design/recursion.html" class="active"><strong aria-hidden="true">3.2.</strong> Recursion</a></li><li class="chapter-item expanded "><a href="../design/reversible-write-reversion.html"><strong aria-hidden="true">3.3.</strong> Reversible Write Reversion Note 1</a></li><li class="chapter-item expanded "><a href="../design/reversible-write-reversion2.html"><strong aria-hidden="true">3.4.</strong> Reversible Write Reversion Note 2</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">zkEVM (Community Edition) Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="recursion"><a class="header" href="#recursion">Recursion</a></h1>
+<ul>
+<li><a href="#projects">Projects</a>
+<ul>
+<li><a href="#aztec-barretenberg">Aztec barretenberg</a>
+<ul>
+<li><a href="#transcript-for-inner-cirucit">Transcript for inner cirucit</a></li>
+<li><a href="#public-inputs-of-inner-circuit">Public inputs of inner circuit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#calculations">Calculations</a>
+<ul>
+<li><a href="#interpolation">Interpolation</a>
+<ul>
+<li><a href="#barycentric-formula-">Barycentric formula </a></li>
+<li><a href="#interpolation-of-rotation-set">Interpolation of rotation set</a></li>
+<li><a href="#interpolation-of-public-inputs">Interpolation of public inputs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#random-thoughts">Random thoughts</a>
+<ul>
+<li><a href="#use-multi-layer-recursive-proof-for-zkevm">Use multi-layer recursive proof for ZKEVM</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="projects"><a class="header" href="#projects">Projects</a></h2>
+<ul>
+<li><a href="https://github.com/AztecProtocol/barretenberg">https://github.com/AztecProtocol/barretenberg</a></li>
+<li><a href="https://github.com/scroll-tech/halo2-snark-aggregator">https://github.com/scroll-tech/halo2-snark-aggregator</a></li>
+<li><a href="https://github.com/trapdoor-Tech/halo2-aggregation">https://github.com/trapdoor-Tech/halo2-aggregation</a></li>
+<li><a href="https://github.com/matter-labs/solidity_plonk_verifier/tree/recursive">https://github.com/matter-labs/solidity_plonk_verifier/tree/recursive</a></li>
+</ul>
+<h3 id="aztec-barretenberg"><a class="header" href="#aztec-barretenberg">Aztec barretenberg</a></h3>
+<h4 id="transcript-for-inner-cirucit"><a class="header" href="#transcript-for-inner-cirucit">Transcript for inner cirucit</a></h4>
+<p>The rollup circuit uses blake2s to generate the challenge, but with compressed input by pedersen hash <sup class="footnote-reference"><a href="#barretenberg-transcript">1</a></sup>. The inputs are serialized into a list of 31 bytes field elements as the input of pedersen hash.</p>
+<p>Also the rollup circuit use 128-bits challenge to reduce MSM work, then most of scalars are 128-bits, only those scalars multiplied with some other stuff (e.g. \(\zeta\omega^i\) or batch evaluation) would need 254-bits MSM.</p>
+<div class="footnote-definition" id="barretenberg-transcript"><sup class="footnote-definition-label">1</sup>
+<p><a href="https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/transcript/transcript.cpp#L128-L130">https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/transcript/transcript.cpp#L128-L130</a></p>
+</div>
+<h4 id="public-inputs-of-inner-circuit"><a class="header" href="#public-inputs-of-inner-circuit">Public inputs of inner circuit</a></h4>
+<p>Barretenberg handles the public inputs along with permutation argument <sup class="footnote-reference"><a href="#barretenberg-permutation-widget">2</a></sup>. Its constraint system implicitly copies \(m\) public inputs \(p\) to first \(m\) witness of the first column, and because the public inputs' contribution \(\frac{1}{\delta}\) to the grand product is easy to compute, so it doesn't need to evaluate public inputs poly at \(\zeta\). Instead, it verifies grand product's final value is the contribution \(\delta\).</p>
+<p>$$
+\frac{1}{\delta} = \prod_{i\in[m]}\left(\frac{p_i + \beta\omega^i + \gamma}{p_i + \beta k_{p}\omega^i + \gamma}\right)
+$$</p>
+<blockquote>
+<p>Not sure if this is cheaper than calculating evaluation of public inputs, but it's really intersting.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>The actual verifier doesn't calculate the \(\frac{1}{\delta}\) for inner circuit, it just concatenates all the public inputs and let rollup circuit to calculate \(\frac{1}{\delta}\) for each inner circuit.</p>
+<div class="footnote-definition" id="barretenberg-permutation-widget"><sup class="footnote-definition-label">2</sup>
+<p>Explaination: <a href="https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/proof_system/public_inputs/public_inputs_impl.hpp#L5-L137">https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/proof_system/public_inputs/public_inputs_impl.hpp#L5-L137</a> <br>Used in permutation widget: <a href="https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/proof_system/widgets/random_widgets/permutation_widget_impl.hpp#L368-L369">https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/proof_system/widgets/random_widgets/permutation_widget_impl.hpp#L368-L369</a></p>
+</div>
+<h2 id="calculations"><a class="header" href="#calculations">Calculations</a></h2>
+<h3 id="interpolation"><a class="header" href="#interpolation">Interpolation</a></h3>
+<h4 id="barycentric-formula-3"><a class="header" href="#barycentric-formula-3">Barycentric formula <sup class="footnote-reference"><a href="#barycentric-formula">3</a></sup></a></h4>
+<p>Using</p>
+<p>$$
+\begin{aligned}
+&amp; \ell(x) = (x-x_0)(x-x_1)\cdots(x-x_k) \
+&amp; \ell^\prime(x_j) = \frac{d\ell(x)}{dx}\rvert_{x=x_j} = \prod_{i=0,i\ne j}^k(x_j-x_i)
+\end{aligned}
+$$</p>
+<p>We can rewrite Lagrange basis as</p>
+<p>$$
+\ell_j(x) = \frac{\ell(x)}{\ell^\prime(x_j)(x-x_j)}
+$$</p>
+<p>Or by defining the <em>barycentric weights</em></p>
+<p>$$
+w_j = \frac{1}{\ell^\prime(x_j)}
+$$</p>
+<p>Then given evaluations ${y_i}<em>{i\in[k]} = {f(x_i)}</em>{i\in[k]}$ of polynomial \(f\), the interpolation of \(f\) now can be evaluated as</p>
+<p>$$
+f(x) = \ell(x) \sum_{j=0}^k\frac{w_j}{x-x_j}y_j
+$$</p>
+<p>Which, if the weights \(w_j\) can be pre-computed, requires only \(\mathcal{O}(k)\) as opposed to \(\mathcal{O}(k^2)\) for evaluating the Lagrange basis \(\ell_j(x)\) individually.</p>
+<p>We can furthers simplify it by considering the barycentric interpolation of the constant function \(g(x) = 1\)</p>
+<p>$$
+g(x) = 1 = \ell(x) \sum_{j=0}^k\frac{w_j}{x-x_j}
+$$</p>
+<p>Divigin \(f(x)\) by \(g(x) = 1\) doesn't modify the interpolation, yet yields</p>
+<p>$$
+f(x) = \frac{\sum_{j=0}^k\frac{w_j}{x-x_j}y_j}{\sum_{j=0}^k\frac{w_j}{x-x_j}}
+$$</p>
+<p>Then we don't even need to evaluate \(\ell(x)\).</p>
+<div class="footnote-definition" id="barycentric-formula"><sup class="footnote-definition-label">3</sup>
+<p><a href="https://people.maths.ox.ac.uk/trefethen/barycentric.pdf">https://people.maths.ox.ac.uk/trefethen/barycentric.pdf</a> <br><a href="https://en.wikipedia.org/wiki/Lagrange_polynomial#Barycentric_form">https://en.wikipedia.org/wiki/Lagrange_polynomial#Barycentric_form</a></p>
+</div>
+<h4 id="interpolation-of-rotation-set"><a class="header" href="#interpolation-of-rotation-set">Interpolation of rotation set</a></h4>
+<p>Defining rotation set \(R\) contains \(k\) different points \({\zeta_1\omega_j}_{j\in[k]}\), where \(\zeta_1\) is the challenge opening point, and \(\omega_i\) are the generator to some power (a.k.a rotation).</p>
+<blockquote>
+<p>Not sure if all arguments of halo2 in the future still have the same opening base \(\zeta_1\) for all queries to multiopen. If not, this approach might not work. An implementation can be found <a href="https://github.com/han0110/halo2/blob/feature%2Fbarycentric-for-r/halo2_proofs/src/poly/multiopen/shplonk/verifier.rs#L60-L99">here</a>.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>In SHPLONK, the verifier needs to calculate interpolation \(r(\zeta_{2})\) from rotation set \(R\) and their claimed evaluation value \({y_j}_{j\in[k]}\).</p>
+<p>One of the largest benefit of barycentric formula is pre-computed barycentric weight. Although \(R\) contains different values in each proof, we can still pre-compute the normalized barycentric weight without \(\zeta_1\), to gain the benefit.</p>
+<p>$$
+w_j = \frac{1}{\prod_{i=0,i\ne j}^k(\omega_j-\omega_i)}
+$$</p>
+<p>And for each rotation set, the actual work is </p>
+<p>$$
+w_j^\prime = \frac{w_j}{\zeta_1^{k-1} * (\zeta_2 - \zeta_1\omega_j)}
+$$</p>
+<p>Also each rotation set might contain more than one polynomials, for each polynomial, its work is</p>
+<p>$$
+r(\zeta_2) = \frac{\sum_{j=0}^kw_j^\prime y_j}{\sum_{j=0}^kw_j^\prime}
+$$</p>
+<p>Where the denominator for one set only needs to be calcuated once.</p>
+<h4 id="interpolation-of-public-inputs"><a class="header" href="#interpolation-of-public-inputs">Interpolation of public inputs</a></h4>
+<p>All lagrange basis could be rotated from the $\ell_0(X) = \frac{X^n-1}{n(X-1)}$</p>
+<p>$$
+\ell_i(X) = \ell_0(X\omega^{-i}) = \frac{X^n-1}{n(X\omega^{-i}-1)}
+$$</p>
+<p>Given \(m\) public inputs \(p\), the interpolation at \(\zeta\) is</p>
+<p>$$
+p(\zeta) = \sum_{i\in[m]}p_i\ell_i(\zeta) = \frac{\zeta^n-1}{n}\sum_{i\in[m]}\frac{p_i}{(\zeta\omega^{-i}) - 1}
+$$</p>
+<p>Note that \(\frac{\zeta^n-1}{n}\) needs \(\log_2(n)\) squaring of \(\zeta\) with a substraction and a division.</p>
+<p>And each extra public input costs about 4 operations (mul + sub + div + add).</p>
+<h2 id="random-thoughts"><a class="header" href="#random-thoughts">Random thoughts</a></h2>
+<h3 id="use-multi-layer-recursive-proof-for-zkevm"><a class="header" href="#use-multi-layer-recursive-proof-for-zkevm">Use multi-layer recursive proof for ZKEVM</a></h3>
+<p>In our case, we have split ZKEVM into different pieces, with some dependency relation in between.</p>
+<p>Fortunately, the dependency relation currently is always being like: One verified circuit serves itself as a lookup table for another. For example, once State circuit is verified to satasify its own relation, then we can synthesize its columns to be a lookup table for EVM circuit to do random access.</p>
+<p>Serving self as a lookup table only needs to pass a single check, that is the table commitment(s) (random linearly combined or not). And the difference between fixed table and such verified private table is: The former is built when setup so it is already trusted, the latter is verified for each proof instance and is trusted as long as the relation is well-defined.</p>
+<p>So, if a single recursive circuit can't aggregate all different circuits in ZKEVM, we can incrementally aggregate them, and only expose the verified private table's commitment(s) as public input, for next proofs' aggregation.</p>
+<blockquote>
+<p>If we can have some kinds of &quot;global randomness&quot;, we can do vector table's random linear combination first, then the extra public input for exposing verified private table is just a single group element (4 values in rns).</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>Illustration of serially aggregating State circuit and EVM circuit:</p>
+<p><img src="./recursion_aggregation-serial.png" alt="" /></p>
+<sub style="bottom: 1em; left: 1em">
+1. Accumulated proof which contains LHS and RHS of pairing <br>
+2. RW Table contains 10 commitments which are verified to open to desired synthesized expressions
+</sub>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../design/random-linear-combinaion/full-runnable-code.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../design/reversible-write-reversion.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../design/random-linear-combinaion/full-runnable-code.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../design/reversible-write-reversion.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        <script type="text/javascript" src="../mermaid.min.js"></script>
+        <script type="text/javascript" src="../mermaid-init.js"></script>
+    </body>
+</html>

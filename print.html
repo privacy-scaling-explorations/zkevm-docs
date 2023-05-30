@@ -1,0 +1,1545 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>zkEVM (Community Edition) Documentation</title>
+        <meta name="robots" content="noindex" />
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="architecture.html"><strong aria-hidden="true">2.</strong> Circuit Architecture</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="architecture/evm-circuit.html"><strong aria-hidden="true">2.1.</strong> EVM Circuit</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="architecture/evm-circuit/opcode-fetching.html"><strong aria-hidden="true">2.1.1.</strong> Opcode Fetching</a></li><li class="chapter-item expanded "><a href="architecture/evm-circuit/multi-step.html"><strong aria-hidden="true">2.1.2.</strong> Multi-Step Implementation</a></li></ol></li><li class="chapter-item expanded "><a href="architecture/tx-circuit.html"><strong aria-hidden="true">2.2.</strong> Tx Circuit</a></li><li class="chapter-item expanded "><a href="architecture/state-circuit.html"><strong aria-hidden="true">2.3.</strong> State Circuit</a></li><li class="chapter-item expanded "><a href="architecture/bytecode-circuit.html"><strong aria-hidden="true">2.4.</strong> Bytecode Circuit</a></li><li class="chapter-item expanded "><a href="architecture/ecdsa-circuit.html"><strong aria-hidden="true">2.5.</strong> ECDSA Circuit</a></li><li class="chapter-item expanded "><a href="architecture/keccak-circuit.html"><strong aria-hidden="true">2.6.</strong> Keccak Circuit</a></li><li class="chapter-item expanded "><a href="architecture/mpt-circuit.html"><strong aria-hidden="true">2.7.</strong> Merkle Patricia Tree Circuit</a></li></ol></li><li class="chapter-item expanded "><a href="design.html"><strong aria-hidden="true">3.</strong> Design Notes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="design/random-linear-combinaion.html"><strong aria-hidden="true">3.1.</strong> Random Linear Combination</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="design/random-linear-combinaion/full-runnable-code.html"><strong aria-hidden="true">3.1.1.</strong> Full Runnable Code</a></li></ol></li><li class="chapter-item expanded "><a href="design/recursion.html"><strong aria-hidden="true">3.2.</strong> Recursion</a></li><li class="chapter-item expanded "><a href="design/reversible-write-reversion.html"><strong aria-hidden="true">3.3.</strong> Reversible Write Reversion Note 1</a></li><li class="chapter-item expanded "><a href="design/reversible-write-reversion2.html"><strong aria-hidden="true">3.4.</strong> Reversible Write Reversion Note 2</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">zkEVM (Community Edition) Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<p>The zkEVM aims to specify and implement a solution to validate Ethereum blocks
+via zero knowledge proofs.  The project aims to achieve 100% compatibility with
+the Ethereum's EVM. It's an open-source project that is contributed and owned
+by the community. Check out the contributors at
+<a href="https://github.com/appliedzkp/zkevm-circuits/graphs/contributors">here</a> and
+<a href="https://github.com/appliedzkp/zkevm-specs/graphs/contributors">here</a>.</p>
+<p>This book contains general documentation of the project.</p>
+<p>The project currently has two goals:</p>
+<h2 id="zkrollup"><a class="header" href="#zkrollup">zkRollup</a></h2>
+<p>Build a solution that allows deploying a layer 2 network that is compatible
+with the Ethereum ecosystem (by following the Ethereum specification) and
+submits zero knowledge proofs of correctly constructed new blocks to a layer 1
+smart contract which validates such proofs (and acts as a consensus layer).</p>
+<p>The usage of zero knowledge proofs to validate blocks allows clients to
+validate transactions quicker than it takes to process them, offering benefits
+in scalability.</p>
+<h2 id="validity-proofs"><a class="header" href="#validity-proofs">Validity proofs</a></h2>
+<p>Build a solution that allows generating zero knowledge proofs of blocks from an
+existing Ethereum network (such as mainnet), and publish them in a smart
+contract in the same network.</p>
+<p>The usage of zero knowledge proofs to validate blocks allows light clients to
+quickly synchronize many blocks with low resource consumption, while
+guaranteeing the correctness of the blocks without needing trust on external
+parties.</p>
+<h1 id="status"><a class="header" href="#status">Status</a></h1>
+<p>The zkEVM project is not yet complete, so you may find parts that are not yet
+implemented, incomplete, or don't have a specification.  At the same time,
+other parts which are already implemented may be changed in the future.</p>
+<h1 id="links"><a class="header" href="#links">Links</a></h1>
+<ul>
+<li><a href="https://github.com/appliedzkp/zkevm-circuits">Implementation</a></li>
+<li><a href="https://github.com/appliedzkp/zkevm-specs">Specification</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="architecture"><a class="header" href="#architecture">Architecture</a></h1>
+<ul>
+<li><a href="architecture.html#concepts">Concepts</a>
+<ul>
+<li><a href="architecture.html#architecture-diagram">Architecture diagram</a></li>
+<li><a href="architecture.html#circuit-as-a-lookup-table">Circuit as a lookup table</a></li>
+<li><a href="architecture.html#evm-word-encoding">EVM word encoding</a></li>
+</ul>
+</li>
+<li><a href="architecture.html#custom-types">Custom types</a></li>
+<li><a href="architecture.html#constants">Constants</a></li>
+</ul>
+<h1 id="concepts"><a class="header" href="#concepts">Concepts</a></h1>
+<h2 id="architecture-diagram"><a class="header" href="#architecture-diagram">Architecture diagram</a></h2>
+<p>Each circuit is layouted to be capable to build their own custom constraints. When circuits encounter some expensive operations, they can outsource the effort to other circuits through the usage of lookup arguments. 
+The relationship between circuits looks like:</p>
+<p><img src="./architecture_diagram2.png" alt="" /></p>
+<p>List of circuits and tables they generate/verify:</p>
+<table><thead><tr><th>Circuit</th><th>Table</th></tr></thead><tbody>
+<tr><td><a href="./architecture/evm-circuit.html">EVM Circuit</a></td><td></td></tr>
+<tr><td><a href="./architecture/bytecode-circuit.html">Bytecode Circuit</a></td><td><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/tables.md#bytecode_table">Bytecode Table</a></td></tr>
+<tr><td><a href="./architecture/state-circuit.html">State Circuit</a></td><td><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/tables.md#rw_table">Rw Table</a></td></tr>
+<tr><td>Block Circuit</td><td><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/tables.md#block_table">Block Table</a></td></tr>
+<tr><td><a href="./architecture/tx-circuit.html">Tx Circuit</a></td><td><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/tables.md#tx_table">Tx Table</a></td></tr>
+<tr><td><a href="./architecture/mpt-circuit.html">MPT Circuit</a></td><td>MPT Table</td></tr>
+<tr><td><a href="./architecture/keccak-circuit.html">Keccak Circuit</a></td><td>Keccak Table</td></tr>
+<tr><td><a href="./architecture/ecdsa-circuit.html">ECDSA Circuit</a></td><td>ECDSA Table</td></tr>
+</tbody></table>
+<p>In the end, the circuits would be assembled depending on their dimension and the desired capacity. For example, we can just combine 2 different circuits by using different columns, or stack them using same columns with extra selectors.</p>
+<p>In order to reduce the time required to build a proof of a full block and to
+simplify the verification step, an aggregation circuit is being build so that condenses the
+verification of each sub-circuit proofs shown in the diagram.  See <a href="./design/recursion.html">Design
+Notes, Recursion</a> for details on the recursion strategy
+used in the aggregation circuit.</p>
+<h2 id="circuit-as-a-lookup-table"><a class="header" href="#circuit-as-a-lookup-table">Circuit as a lookup table</a></h2>
+<p>In halo2, the lookup is flexible to be configured. Anything able to be turned into <code>Expression</code> could be used as <code>item: Tuple[int, ...]</code> or <code>table: Set[Tuple[int, ...]]</code> in lookup. Enabling <code>assert item in table</code>. The <code>Expression</code> includes <code>Constant</code>, <code>Fixed</code>, <code>Advice</code> or <code>Instance</code> column at arbitrary rotation.</p>
+<p>The motivation to have multiple circuits as lookup tables is that EVM contains many circuit unfriendly operations like random read-write data access, &quot;wrong&quot; field operation (ECDSA on secp256k1), traditional hash functions like <code>keccak256</code>, etc... And many of them accept variable lenght input.</p>
+<p>These expensive operations make it hard to design an EVM circuit to verify computation traces because each step could possibly contain some of the operations mentioned above. So we tried to separate these expensive operations into single-purpose circuits which have a more friendly layout, and use them via lookups to communicate it's input and output, Outsourcing the effort.</p>
+<p>The reason input-output lookups could be used to outsource the effort is that we know the that the lookup-ed table is configured with constraints to verify the input and output are in some relationship. For example, we let Bytecode circuit to hold a set of tuple <code>(code_hash, index, opcode)</code>, and each <code>code_hash</code> is verified to be the keccak256 digest of opcodes it contains, then in EVM circuit we can load <code>opcode</code> with <code>(code_hash, program_counter)</code> by looking up the Bytecode table.</p>
+<p>However, there are some properties we can't ensure only with lookups (which ultimately only prove that the contents of all the lookups are a subset of a table).  We want to constraint that the amount of all (looked-up) <code>item</code>s should be equal to the size of <code>table</code>, which is required by the EVM circuit and State circuit to prevent extra malicious writes in the <code>table</code>. In such case (the set of looked up items define the table exactly), we need some extra constraint to ensure the relationship is correct. A naive approach is to count all <code>item</code> in State circuit (which in the end is the size of the <code>table</code>) and constraint it to be equal to the value counted in the EVM circuit.</p>
+<h2 id="evm-word-encoding"><a class="header" href="#evm-word-encoding">EVM word encoding</a></h2>
+<p>See <a href="./design/random-linear-combinaion.html">Design Notes, Random Linear Combination</a></p>
+<ul>
+<li><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/word-encoding.md">Word encoding spec</a></li>
+</ul>
+<h1 id="custom-types"><a class="header" href="#custom-types">Custom types</a></h1>
+<h1 id="constants"><a class="header" href="#constants">Constants</a></h1>
+<table><thead><tr><th>Name</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>MAX_MEMORY_ADDRESS</code></td><td><code>2**40 - 1</code></td><td>max memory address allowed <sup class="footnote-reference"><a href="#1">1</a></sup></td></tr>
+<tr><td><code>MAX_GAS</code></td><td><code>2**64 - 1</code></td><td>max gas allowed</td></tr>
+<tr><td><code>MAX_ETHER</code></td><td><code>2**256 - 1</code></td><td>max value of ether allowed <sup class="footnote-reference"><a href="#2">2</a></sup></td></tr>
+</tbody></table>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p>The explicit max memory address in EVM is actually <code>32 * (2**32 - 1)</code>, which is the one that doesn't make memory expansion gas cost overflow <code>u64</code>. In our case, memory address is allowed to be 5 bytes, but will constrain the memory expansion gas cost to fit <code>u64</code> in success case.</p>
+</div>
+<div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
+<p>I didn't find a explicit upper bound on value of ether (for <code>balance</code> or <code>gas_price</code>) in yellow paper, but handling unbounded big integer seems unrealistic in circuit, so with <code>u256</code> as a hard bound seems reasonable.</p>
+</div>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="evm-circuit"><a class="header" href="#evm-circuit">EVM Circuit</a></h1>
+<ul>
+<li><a href="architecture/evm-circuit.html#introduction">Introduction</a></li>
+<li><a href="architecture/evm-circuit.html#concepts">Concepts</a>
+<ul>
+<li><a href="architecture/evm-circuit.html#execution-result">Execution result</a></li>
+<li><a href="architecture/evm-circuit.html#random-access-data">Random access data</a></li>
+<li><a href="architecture/evm-circuit.html#reversible-write-reversion">Reversible write reversion</a></li>
+<li><a href="architecture/evm-circuit.html#opcode-fetching">Opcode fetching</a></li>
+<li><a href="architecture/evm-circuit.html#internal-call">Internal call</a></li>
+</ul>
+</li>
+<li><a href="architecture/evm-circuit.html#constraints">Constraints</a>
+<ul>
+<li><a href="architecture/evm-circuit.html#main"><code>main</code></a></li>
+</ul>
+</li>
+<li><a href="architecture/evm-circuit.html#implementation">Implementation</a></li>
+</ul>
+<h1 id="introduction-1"><a class="header" href="#introduction-1">Introduction</a></h1>
+<p>EVM circuit iterates over transactions included in the proof to verify that each execution step of a transaction is valid. Basically the scale of a step is the same as in the EVM, so usually we handle one opcode per step, except those opcodes like <code>SHA3</code> or <code>CALLDATACOPY</code> that operate on variable size of memory, which would require multiple &quot;virtual&quot; steps.</p>
+<blockquote>
+<p>The scale of a step somehow could be different depends on the approach, an extreme case is to implement a VM with reduced instruction set (like TinyRAM) to emulate EVM, which would have a much smaller step, but not sure how it compares to current approach.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>To verify if a step is valid, we first enumerate all possible execution results of a step in the EVM including success and error cases, and then build a custom constraint to verify that the step transition is correct for each execution result.</p>
+<p>For each step, we constrain it to enable one of the execution results, and specially, to constrain the first step to enable <code>BEGIN_TX</code>, which then repeats the step to verify the full execution trace. Also each step is given access to next step to propagate the tracking information, by putting constraints like <code>assert next.program_counter == curr.program_counter + 1</code>.</p>
+<h1 id="concepts-1"><a class="header" href="#concepts-1">Concepts</a></h1>
+<h2 id="execution-result"><a class="header" href="#execution-result">Execution result</a></h2>
+<p>It's intuitive to have each opcode as a branch in step. However, EVM has so rich opcodes that some of them are very similar like <code>{ADD,SUB}</code>, <code>{PUSH*}</code>, <code>{DUP*}</code> and <code>{SWAP*}</code> that seem to be handled by almost identical constraint with small tweak (to swap a value or automatically done due to linearity), it seems we could reduce our effort to only implement it once to handle multiple opcodes in single branch.</p>
+<p>In addition, an EVM state transition could also contain serveral kinds of error cases, we also need to take them into consideration to be equivalent to EVM. It would be annoying for each opcode branch to handle their own error cases since it needs to halt the step and return the execution context to caller.</p>
+<p>Fortunately, most error cases are easy to verify with some pre-built lookup table even they could happen to many opcodes, only some tough errors like out of gas due to dynamic gas usage need to be verified one by one. So we further unroll all kinds of error cases as kinds of execution result.</p>
+<p>So we can enumerate <a href="https://github.com/appliedzkp/zkevm-specs/blob/83ad4ed571e3ada7c18a411075574110dfc5ae5a/src/zkevm_specs/evm/execution_result/execution_result.py#L4">all possible execution results</a> and turn EVM circuit into a finite state machine like:</p>
+<pre class="mermaid">flowchart LR
+    BEGIN[.] --&gt; BeginTx;
+
+    BeginTx --&gt; |no code| EndTx;
+    BeginTx --&gt; |has code| EVMExecStates;
+    EVMExecStates --&gt; EVMExecStates;
+    EVMExecStates --&gt; EndTx;
+
+    EndTx --&gt; BeginTx;
+
+    EndTx --&gt; EndBlock;
+    EndBlock --&gt; EndBlock;
+    EndBlock --&gt; END[.];
+</pre>
+<pre class="mermaid">flowchart LR
+    subgraph A [EVMExecStates]
+    BEGIN2[.] --&gt; SuccessStep;
+    BEGIN2[.] --&gt; ReturnStep;
+    SuccessStep --&gt; SuccessStep;
+    SuccessStep --&gt; ReturnStep;
+    ReturnStep --&gt; |not is_root| SuccessStep;
+    ReturnStep --&gt; |not is_root| ReturnStep;
+    ReturnStep --&gt; |is_root| END2[.];
+    end
+</pre>
+<ul>
+<li><strong>BeginTx</strong>:
+<ul>
+<li>Beginning of a transaction.</li>
+</ul>
+</li>
+<li><strong>EVMExecStates</strong> = [ SuccessStep | ReturnStep ]</li>
+<li><strong>SuccessStep</strong> = [ ExecStep | ExecMetaStep | ExecSubStep ]
+<ul>
+<li>Set of states that suceed and continue the execution within the call.</li>
+</ul>
+</li>
+<li><strong>ReturnStep</strong> = [ ExplicitReturn | Error ]
+<ul>
+<li>Set of states that halt the execution of a call and return to the caller
+or go to the next tx.</li>
+</ul>
+</li>
+<li><strong>ExecStep</strong>:
+<ul>
+<li>1-1 mapping with a GethExecStep for opcodes that map to a single gadget
+with a single step.  Example: <code>ADD</code>, <code>MUL</code>, <code>DIV</code>, <code>CREATE2</code>.</li>
+</ul>
+</li>
+<li><strong>ExecMetaStep</strong>:
+<ul>
+<li>N-1 mapping with a GethExecStep for opcodes that share the same gadget
+(due to similarity) with a single step.  For example <code>{ADD, SUB}</code>,
+<code>{PUSH*}</code>, <code>{DUP*}</code> and <code>{SWAP*}</code>.
+A good example on how these are grouped is the <code>StackOnlyOpcode</code> struct.</li>
+</ul>
+</li>
+<li><strong>ExecSubStep</strong>:
+<ul>
+<li>1-N mapping with a GethExecStep for opcodes that deal with dynamic size
+arrays for which multiple steps are generated.
+<ul>
+<li><code>CALLDATACOPY</code> -&gt; CopyToMemory</li>
+<li><code>RETURNDATACOPY</code> -&gt; TODO</li>
+<li><code>CODECOPY</code> -&gt; TODO</li>
+<li><code>EXTCODECOPY</code> -&gt; IN PROGRESS</li>
+<li><code>SHA3</code> -&gt; IN PROGRESS</li>
+<li><code>LOGN</code> -&gt; CopyToLog</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>ExplicitReturn</strong>:
+<ul>
+<li>1-1 mapping with a GethExecStep for opcodes that return from a call
+without exception.</li>
+</ul>
+</li>
+<li><strong>Error</strong> = [ ErrorEnoughGas | ErrorOutOfGas ]
+<ul>
+<li>Set of states that are associated with exceptions caused by opcodes.</li>
+</ul>
+</li>
+<li><strong>ErrorEnoughGas</strong>:
+<ul>
+<li>Set of error states that are unrelated to out of gas.  Example:
+<code>InvalidOpcode</code>, <code>StackOverflow</code>, <code>InvalidJump</code>.</li>
+</ul>
+</li>
+<li><strong>ErrorOutOfGas</strong>:
+<ul>
+<li>Set of error states for opcodes that run out of gas. For each opcode
+(sometimes group of opcodes) that has dynamic memory gas usage, there is
+a specific <strong>ErrorOutOfGas</strong> error state.</li>
+</ul>
+</li>
+<li><strong>EndTx</strong>
+<ul>
+<li>End of a transaction.</li>
+</ul>
+</li>
+<li><strong>EndBlock</strong>
+<ul>
+<li>End of a block (serves also as padding for the rest of the state step slots)</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>In the current implementation, we ask the opcode implementer to also implement error cases, which seems to be a redundant effort.
+But by doing this, they can focus more on opcode's success case. Also error cases are usually easier to verify, so I think it also reduces the overall implementation complexity.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<h2 id="random-access-data"><a class="header" href="#random-access-data">Random access data</a></h2>
+<p>In EVM, the interpreter has the ability to do any random access to data like block context, account balance, stack and memory in current scope, etc... Some of these access are read-write and others are read-only.</p>
+<p>In EVM circuit, we leverage the concept <a href="architecture/evm-circuit.html#Circuit-as-a-lookup-table">Circuit as a lookup table</a> to duplicate these random data access to other circuits in a different layout and verify that they are consistent and valid. After these random data access are verified, we can use them just as if they were only tables. <a href="https://github.com/appliedzkp/zkevm-specs/blob/83ad4ed571/src/zkevm_specs/evm/table.py#L108">Here</a> are the tables currently used in the EVM circuit.</p>
+<p>For read-write access data, EVM circuit looks up State circuit with a sequentially <code>rw_counter</code> (read-write counter) to make sure the read-write access is chronological. It also uses a flag <code>is_write</code> to check data consistency between different write access.</p>
+<p>For read-only access data, EVM circuit looks-up Bytecode circuit, Tx circuit and Call circuit directly.</p>
+<h2 id="reversible-write-reversion"><a class="header" href="#reversible-write-reversion">Reversible write reversion</a></h2>
+<p>In EVM, reversible writes can be reverted if any call fails. There are many kinds of reversible writes, a complete list can be found <a href="https://github.com/ethereum/go-ethereum/blob/master/core/state/journal.go#L87-L141">here</a>.</p>
+<p>In EVM circuit, each call is attached with a flag (<code>is_persistent</code>) to know if it succeeds or not. So ideally, we only need to do reversion on these kinds of reversible writes which affect future execution before reversion:</p>
+<ul>
+<li><code>TxAccessListAccount</code></li>
+<li><code>TxAccessListStorageSlot</code></li>
+<li><code>AccountNonce</code></li>
+<li><code>AccountBalance</code></li>
+<li><code>AccountCodeHash</code></li>
+<li><code>AccountStorage</code></li>
+</ul>
+<p>On some others we don't need to do reversion because they don't affect future execution before reversion, we only write them when <code>is_persistent</code> is <code>1</code>:</p>
+<ul>
+<li><code>TxRefund</code></li>
+<li><code>AccountDestructed</code></li>
+</ul>
+<blockquote>
+<p>Another tag is <code>TxLog</code>, which also doesn't affect future execution. It should be explained where to write such record to after we decide where to build receipt trie.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>To enable reversible write reversion, we need some meta information of a call:</p>
+<ol>
+<li><code>is_persistent</code> - To know if we need reversion or not.</li>
+<li><code>rw_counter_end_of_reversion</code> - To know at which point in the future we should revert.</li>
+<li><code>reversible_write_counter</code> - To know how many reversible writes we have done until now.</li>
+</ol>
+<p>Then at each reversible write, we first check if <code>is_persistent</code> is <code>0</code>, if so we do an extra reversible write at <code>rw_counter_end_of_reversion - reversible_write_counter</code> with the old value, which reverts the reversible write in a reverse order.</p>
+<p>For more notes on reversible write reversion see:</p>
+<ul>
+<li><a href="architecture/../design/reversible-write-reversion.html">Design Notes, Reversible Write Reversion Note 1</a></li>
+<li><a href="architecture/../design/reversible-write-reversion2.html">Design Notes, Reversible Write Reversion Note 2</a></li>
+</ul>
+<h2 id="opcode-fetching"><a class="header" href="#opcode-fetching">Opcode fetching</a></h2>
+<p>In EVM circuit, there are 3 kinds of opcode source for execution or copy:</p>
+<ol>
+<li>Contract interaction:
+Opcode is lookup from contract bytecode in Bytecode circuit by tuple <code>(code_hash, index, opcode)</code></li>
+<li>Contract creation in root call:
+Opcode is lookup from tx calldata in Tx circuit by tuple <code>(tx_id, TxTableTag.Calldata, index, opcode)</code></li>
+<li>Contract creation in internal call:
+Opcode is lookup from caller's memory in State circuit by tuple <code>(rw_counter, False, caller_id, index, opcode)</code></li>
+</ol>
+<p>Before we fetch opcode from any source, it checks if the index is in the given range, if not, it follows the behavior of current EVM to implicitly returning <code>0</code>.</p>
+<h2 id="internal-call"><a class="header" href="#internal-call">Internal call</a></h2>
+<p>EVM supports internal call triggered by opcodes. In EVM circuit, the opcodes (like <code>CALL</code> or <code>CREATE</code>) that trigger internal call, will:</p>
+<ul>
+<li>Save their own <code>call_state</code> into State circuit.</li>
+<li>Setup next call's context.</li>
+<li>Initialize next step's <code>call_state</code> to start a new environment.</li>
+</ul>
+<p>Then the opcodes (like <code>RETURN</code> or <code>REVERT</code>) and error cases that halt, will restore caller's <code>call_state</code> and set it back to next step.</p>
+<p>For a simple <code>CALL</code> example with illustration (many details are hided for simplicity):</p>
+<p><img src="architecture/./evm-circuit_internal-call.png" alt="" /></p>
+<h1 id="constraints"><a class="header" href="#constraints">Constraints</a></h1>
+<h2 id="main"><a class="header" href="#main"><code>main</code></a></h2>
+<p>==TODO== Explain each execution result</p>
+<h1 id="implementation"><a class="header" href="#implementation">Implementation</a></h1>
+<ul>
+<li><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/evm-proof.md">spec</a>
+<ul>
+<li><a href="https://github.com/appliedzkp/zkevm-specs/tree/master/src/zkevm_specs/evm">python</a></li>
+</ul>
+</li>
+<li><a href="https://github.com/appliedzkp/zkevm-circuits/tree/main/zkevm-circuits/src/evm_circuit">circuit</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="opcode-fetching-1"><a class="header" href="#opcode-fetching-1">Opcode Fetching</a></h1>
+<ul>
+<li><a href="architecture/evm-circuit/opcode-fetching.html#introduction">Introduction</a>
+<ul>
+<li><a href="architecture/evm-circuit/opcode-fetching.html#step-1---is_code-annotation">Step #1 - <code>is_code</code> Annotation</a></li>
+<li><a href="architecture/evm-circuit/opcode-fetching.html#step-2---explicitly-copy-memory-to-bytecode_table">Step #2 - Explicitly copy memory to bytecode_table</a></li>
+<li><a href="architecture/evm-circuit/opcode-fetching.html#random-thought">Random Thought</a>
+<ul>
+<li><a href="architecture/evm-circuit/opcode-fetching.html#memory-copy-optimization">Memory copy optimization</a></li>
+<li><a href="architecture/evm-circuit/opcode-fetching.html#memory-copy-generalizaiton">Memory copy generalizaiton</a></li>
+<li><a href="architecture/evm-circuit/opcode-fetching.html#tx-calldata-copy">Tx calldata copy</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="introduction-2"><a class="header" href="#introduction-2">Introduction</a></h1>
+<p>For opcode fetching, we might have 3 sources in different situation:</p>
+<ol>
+<li>When contract interaction, we lookup <code>bytecode_table</code> to read bytecode.</li>
+<li>When contract creation in root call, we lookup <code>tx_table</code> to read transaction's calldata.</li>
+<li>When contract creation in internal call, we lookup <code>rw_table</code> to read caller's memory.</li>
+</ol>
+<p>Also we need to handle 2 kinds of annoying EVM features:</p>
+<ol>
+<li>Implicit <code>STOP</code> returning if fetching out of range.</li>
+<li>For <code>JUMP*</code>, we need to verify:
+<ol>
+<li>destination is a <code>JUMPDEST</code></li>
+<li>destination is not a data section of <code>PUSH*</code></li>
+</ol>
+</li>
+</ol>
+<p>Since for each step <code>program_counter</code> only changes in 3 situation:</p>
+<pre><code class="language-python">if opcode in [JUMP, JUMPI]:
+    program_counter = dest
+elif opcode in range(PUSH1, PUSH1 + 32):
+    program_counter += opcode - PUSH1 + 1
+else:
+    program_counter += 1
+</code></pre>
+<p>For all opcodes except for <code>JUMP*</code> and <code>PUSH*</code>, we only need to worry about first issue, and we can solve it by checking if <code>bytecode_length &lt;= program_counter</code> then detect such case.</p>
+<p>For <code>PUSH*</code> we can do the lookup only when <code>program_counter + x &lt; bytecode_length</code> and simulate the &quot;implicit <code>0</code>&quot;. (Other opcodes like <code>CALLDATALOAD</code>, <code>CALLDATACOPY</code>, <code>CODECOPY</code>, <code>EXTCODECOPY</code> also encounter such &quot;implicit <code>0</code>&quot; problem, and we need to handle them carefully).</p>
+<p>However, for <code>JUMP*</code> we need one more trick to handle, especially for the <strong>issue 2.2.</strong>, which seems not possible to check if we don't scan through all opcodes from the beginning to the end.</p>
+<p>Focus on solving the <strong>issue 2.2.</strong>, my thought went through 2 steps:</p>
+<h2 id="step-1---is_code-annotation"><a class="header" href="#step-1---is_code-annotation">Step #1 - <code>is_code</code> Annotation</a></h2>
+<p>If the opcode is layouted to be adjacent like the <code>bytecode_table</code> or <code>tx_table</code>, we can annotate each row with <code>push_data_rindex</code> and <code>is_code</code>:</p>
+<blockquote>
+<p><code>push_data_rindex</code> means push data's reverse index, which starts from <code>1</code> instead of <code>0</code>.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>$$
+\begin{array}{|c|c|}
+\hline
+\texttt{{bytecode_hash,tx_id}} &amp; \texttt{index} &amp; \texttt{opcode} &amp; \texttt{push_data_rindex} &amp; \texttt{is_code} &amp; \text{note} \\\hline
+\color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} \\\hline
+\texttt{0xff} &amp; \texttt{0} &amp; \texttt{PUSH1} &amp; \texttt{0} &amp; \texttt{1} \\\hline
+\texttt{0xff} &amp; \texttt{1} &amp; \texttt{0xef} &amp; \texttt{1} &amp; \texttt{0} \\\hline
+\texttt{0xff} &amp; \texttt{2} &amp; \texttt{0xee} &amp; \texttt{0} &amp; \texttt{1} \\\hline
+\texttt{0xff} &amp; \texttt{3} &amp; \texttt{PUSH2} &amp; \texttt{0} &amp; \texttt{1} \\\hline
+\texttt{0xff} &amp; \texttt{4} &amp; \texttt{PUSH1} &amp; \texttt{2} &amp; \texttt{0} &amp; \text{is not code} \\\hline
+\texttt{0xff} &amp; \texttt{5} &amp; \texttt{PUSH1} &amp; \texttt{1} &amp; \texttt{0} &amp; \text{is not code} \\\hline
+\texttt{0xff} &amp; \texttt{6} &amp; \texttt{JUMPDEST} &amp; \texttt{0} &amp; \texttt{1} &amp; \text{is code!} \\\hline
+\color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} \\\hline
+\end{array}
+$$</p>
+<p>The constraint would be like:</p>
+<pre><code class="language-python">class Row:
+    code_hash_or_tx_id: int
+    index: int
+    opcode: int
+    push_data_rindex: int
+    is_code: int
+
+def constraint(prev: Row, curr: Row, is_first_row: bool):
+    same_source = curr.code_hash_or_tx_id == prev.code_hash_or_tx_id
+
+    assert curr.is_code == is_zero(curr.push_data_rindex)
+
+    if is_first_row or same_source:
+        assert curr.push_data_rindex == 0
+    else:
+        if prev.is_code:
+            if (prev.opcode - PUSH1) in range(32):
+                assert curr.push_data_rindex == prev.opcode - PUSH1 + 1
+            else:
+                assert curr.push_data_rindex == 0
+        else:
+            assert curr.push_data_rindex == prev.push_data_rindex - 1
+</code></pre>
+<p>And when handling <code>JUMP*</code> we can check <code>is_code</code> for verification.</p>
+<p>However, the memory in the State circuit it's layouted to be <code>memory_address</code> and then <code>rw_counter</code>, which we can't select at some specific point to do such analysis. So this approach seems not work on all situations.</p>
+<h2 id="step-2---explicitly-copy-memory-to-bytecode_table"><a class="header" href="#step-2---explicitly-copy-memory-to-bytecode_table">Step #2 - Explicitly copy memory to bytecode_table</a></h2>
+<p>It seems inevitable to copy the memory to <code>bytecode_table</code> since the <code>CREATE*</code> needs it to know the <code>bytecode_hash</code>. So maybe we can abuse such constraint to also copy the creation bytecode to the <code>bytecode_table</code>. Althought the hash of it means nothing, we still can use it as a unique identifier to index out the opcode.</p>
+<p>Then we can define an internal multi-step execution result <code>COPY_MEMORY_TO_BYTECODE</code> which can only transit from <code>CREATE*</code> or <code>RETURN</code>, and copy the memory from offset with length to the <code>bytecode_table</code>.</p>
+<p>Although it costs many steps to copy the creation code, it makes the opcode fetching source become simpler with only <code>bytecode_table</code> and <code>tx_table</code>. The issue of memory's unfriendly layout is also gone, <strong>issue 2.2.</strong> is then resolved.</p>
+<blockquote>
+<p>Memory copy on creation code seems terrible since a prover can reuse the same large chunk of memory to call multiple times of <code>CREATE*</code>, and we always need to copy them, which might cost many steps.
+We need some benchmark to see if a block contains full of such <code>CREATE*</code> to know how much gas we can verify in a block, then know if it's aligned to current gas cost model or not, and decide whether to further optimize it.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<h2 id="random-thought"><a class="header" href="#random-thought">Random Thought</a></h2>
+<h3 id="memory-copy-optimization"><a class="header" href="#memory-copy-optimization">Memory copy optimization</a></h3>
+<p>When it comes to &quot;memory copy&quot;, it means in EVM circuit we lookup both <code>rw_table</code> and <code>bytecode_table</code> to make sure the chunk of memory indeed exists in the latter table. However, EVM circuit doesn't have a friendly layout to do such operation (it costs many expressions to achieve so).</p>
+<p>If we want to further optimize &quot;memory copy&quot; in respect to the concern highlighted in <a href="architecture/evm-circuit/opcode-fetching.html#step-2---explicitly-copy-memory-to-bytecode_table">Step #2</a>, since we know the memory to be copied is in chunk, and in <code>bytecode_table</code> it also exists in chunk, then we seem to let Bytecode circuit to do such operation with correct <code>rw_counter</code>, and in EVM circuit we only need to &quot;trigger&quot; such operation. We can add extra selector columns to enable it like:</p>
+<p>$$
+\begin{array}{|c|c|}
+\hline
+\texttt{call_id} &amp; \texttt{memory_offset} &amp; \texttt{rw_counter} &amp; \texttt{bytecode_hash} &amp; \texttt{bytecode_length} &amp; \texttt{index} &amp; \texttt{opcode} \\\hline
+\color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} \\\hline
+\texttt{3} &amp; \texttt{64} &amp; \texttt{38} &amp; \texttt{0xff} &amp; \texttt{4} &amp; \texttt{0} &amp; \texttt{PUSH1} \\\hline
+\texttt{3} &amp; \texttt{64} &amp; \texttt{39} &amp; \texttt{0xff} &amp; \texttt{4} &amp; \texttt{1} &amp; \texttt{0x00} \\\hline
+\texttt{3} &amp; \texttt{64} &amp; \texttt{40} &amp; \texttt{0xff} &amp; \texttt{4} &amp; \texttt{2} &amp; \texttt{DUP1} \\\hline
+\texttt{3} &amp; \texttt{64} &amp; \texttt{41} &amp; \texttt{0xff} &amp; \texttt{4} &amp; \texttt{3} &amp; \texttt{RETURN} \\\hline
+\color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} \\\hline
+\end{array}
+$$</p>
+<blockquote>
+<p><code>bytecode_length</code> is required no matter we adopt this or not. It's ignored previously for simplicity</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>Then the constraint in Bytecode circuit might look like:</p>
+<pre><code class="language-python">class Row:
+    call_id: int
+    memory_offset: int
+    rw_counter: int
+
+    bytecode_hash: int
+    bytecode_length: int
+    index: int
+    opcode: int
+
+def copy_memory_constraint(prev: Row, curr: Row, is_first_row: bool):
+    same_source = curr.bytecode_hash == prev.bytecode_hash
+    
+    if same_source:
+        assert curr.call_id == prev.call_id
+        assert curr.memory_offset == prev.memory_offset
+        assert curr.rw_counter == prev.rw_counter + 1
+
+    if curr.call_id is not 0:
+        assert (
+            curr.rw_counter,                 # rw_counter
+            False,                           # is_write
+            Memory,                          # tag
+            curr.call_id,                    # call_id
+            curr.memory_offset + curr.index, # memory_address
+            curr.opcode,                     # byte
+            0,
+            0,
+        ) in rw_table
+</code></pre>
+<p>And in EVM circuit we only needs to make sure the first row of such series exist, then transit the <code>rw_counter</code> by <code>bytecode_length</code> to next step.</p>
+<h3 id="memory-copy-generalizaiton"><a class="header" href="#memory-copy-generalizaiton">Memory copy generalizaiton</a></h3>
+<p>For opcodes like <code>PUSH*</code>, <code>CALLDATALOAD</code>, <code>CALLDATACOPY</code>, <code>CODECOPY</code>, <code>EXTCODECOPY</code> we need to copy bytecode to memory and it seems that we can reuse the <code>COPY_MEMORY_TO_BYTECODE</code>, with a small tweak to change the <code>is_write</code> to memory to <code>True</code>.</p>
+<h3 id="tx-calldata-copy"><a class="header" href="#tx-calldata-copy">Tx calldata copy</a></h3>
+<p>Since we already copy memory, why not also copy the calldata part of <code>tx_table</code> to <code>bytecode_table</code>? We can use the same trick as in <a href="architecture/evm-circuit/opcode-fetching.html#Memory-copy-optimization">Memory copy optimization</a> to make sure tx calldata is copied to <code>bytecode_table</code>. Then we only have a single source to do opcode fetching, which simplifies a lot of things.</p>
+<blockquote>
+<p>The only concern is, will this cost much on <code>bytecode_table</code>'s capacity? We still need actual benchmark to see if it's adoptable.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<blockquote>
+<p>I think so it would be better to maintain only one byte_code_table for all related using if it is feasible, calldata copy of contract creation seems double the table size</p>
+<p><strong>dream</strong></p>
+</blockquote>
+<div style="break-before: page; page-break-before: always;"></div><style>
+#wide-table table {
+    white-space: nowrap;
+    width: 120%;
+    transform: translateX(-10%);
+}
+</style>
+<h1 id="multi-step-implementation"><a class="header" href="#multi-step-implementation">Multi-Step Implementation</a></h1>
+<ul>
+<li><a href="architecture/evm-circuit/multi-step.html#introduction">Introduction</a>
+<ul>
+<li><a href="architecture/evm-circuit/multi-step.html#approaches">Approaches</a>
+<ul>
+<li><a href="architecture/evm-circuit/multi-step.html#approach-1---given-access-to-previous-step">Approach #1 - Given access to previous step</a></li>
+<li><a href="architecture/evm-circuit/multi-step.html#approach-2---introduce-internal-executionstate">Approach #2 - Introduce internal <code>ExecutionState</code></a></li>
+</ul>
+</li>
+<li><a href="architecture/evm-circuit/multi-step.html#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+<h1 id="introduction-3"><a class="header" href="#introduction-3">Introduction</a></h1>
+<p>In EVM, there are serveral opcodes moving dynamic-length bytes around between different sources, here is a complete list:</p>
+<div id="wide-table">    
+<table>
+<thead>
+<tr>
+<th><span>Type</span></th>
+<th><span>Opcode</span></th>
+<th><span>Source</span></th>
+<th><span>Destination</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan="3"><span>1</span></td>
+<td><code>CODECOPY</code><br><code>EXTCODECOPY</code></td>
+<td><code>bytecode[code_hash]</code></td>
+<td><code>calls[call_id].memory</code></td>
+</tr>
+<tr>
+<td><code>CALLDATACOPY and is_root</code></td>
+<td><code>txs[tx_id].calldata</code></td>
+<td><code>calls[call_id].memory</code></td>
+</tr>
+<tr>
+<td><code>CALLDATACOPY and not_root</code></td>
+<td><code>calls[caller_call_id].memory</code></td>
+<td><code>calls[call_id].memory</code></td>
+</tr>
+<tr>
+<td><span>2</span></td>
+<td><code>RETURNDATACOPY</code></td>
+<td><code>calls[callee_call_id].memory</code></td>
+<td><code>calls[call_id].memory</code></td>
+</tr>
+<tr>
+<td rowspan="2">3</span></td>
+<td><code>RETURN and is_create</code><br><code>CREATE</code><br><code>CREATE2</code></td>
+<td><code>calls[call_id].memory</code></td>
+<td><code>bytecode[code_hash]</code></td>
+</tr>
+<tr>
+<td><code>SHA3</code></td>
+<td><code>calls[call_id].memory</code></td>
+<td><span>TBD</span></td>
+</tr>
+<tr>
+<td rowspan="2">4</span></td>
+<td><code>RETURN and not_create</code></td>
+<td><code>calls[call_id].memory</code></td>
+<td><code>calls[caller_call_id].memory</code></td>
+</tr>
+<tr>
+<td><code>REVERT and not_create</code></td>
+<td><code>calls[call_id].memory</code></td>
+<td><code>calls[caller_call_id].memory</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>With illustration:</p>
+<p><img src="architecture/evm-circuit/./multi-step_diagram.png" alt="" /></p>
+<p>There could be classified to be 4 types:</p>
+<ol>
+<li><code>* -&gt; memory (padding)</code>
+<ul>
+<li>Including:
+<ul>
+<li><code>CALLDATACOPY</code></li>
+<li><code>CODECOPY</code></li>
+<li><code>EXTCODECOPY</code></li>
+</ul>
+</li>
+<li>Copy from calldata or code to current memory.</li>
+<li>Memory gets filled with 0's when copied out of source's range, in other words, source is padded with 0's to the range.</li>
+</ul>
+</li>
+<li><code>* -&gt; memory (no padding)</code>
+<ul>
+<li>Including <code>RETURNDATACOPY</code>.</li>
+<li>Similar to Type 1, but the range is explicitly checked to be in source's range, otherwise the EVM halts with exception. So no padding issue.</li>
+</ul>
+</li>
+<li><code>memory -&gt; * (no range capped)</code>
+<ul>
+<li>Including:
+<ul>
+<li><code>RETURN</code> when <code>is_create</code></li>
+<li><code>CREATE</code></li>
+<li><code>CREATE2</code></li>
+<li><code>SHA3</code></li>
+</ul>
+</li>
+<li>Copy from current memory to destination.</li>
+<li>No padding issue since memory is always expanded implicitly due to lazy initialization.</li>
+</ul>
+</li>
+<li><code>memory -&gt; * (range capped)</code>
+<ul>
+<li>Including:
+<ul>
+<li><code>RETURN</code> when <code>not_create</code></li>
+<li><code>REVERT</code> when <code>not_create</code></li>
+</ul>
+</li>
+<li>Similar to Type 3, but the range is capped by caller's assignment.</li>
+</ul>
+</li>
+</ol>
+<h2 id="approaches"><a class="header" href="#approaches">Approaches</a></h2>
+<h3 id="approach-1---given-access-to-previous-step"><a class="header" href="#approach-1---given-access-to-previous-step">Approach #1 - Given access to previous step</a></h3>
+<p>Take <code>CALLDATALOAD</code> as an example, in the <a href="https://github.com/appliedzkp/zkevm-specs/blob/2864c3f0f6cb905b8548da9cde76fea13a42085f/src/zkevm_specs/evm/execution_result/calldatacopy.py">approach</a> by @icemelon, it requires access to previous step to infer what's the state of current step, to know if the step is the first step, we check</p>
+<ol>
+<li><code>curr.opcode == CALLDATALOAD</code></li>
+<li><code>prev.execution_state != CALLDATALOAD or prev.finished is True</code></li>
+</ol>
+<p>And it transit the <code>StepState</code> at the last step, which is inferred from if the bytes left to copy is less then a step's amount.</p>
+<h3 id="approach-2---introduce-internal-executionstate"><a class="header" href="#approach-2---introduce-internal-executionstate">Approach #2 - Introduce internal <code>ExecutionState</code></a></h3>
+<p>This approach introduce internal <code>ExecutionState</code> with extra constraint of <code>ExecutionState</code> transition, and the inputs will be passed by constraint from previous step. The new <code>ExecutionState</code> are:</p>
+<ul>
+<li>
+<p><code>CopyMemoryToMemory</code></p>
+<ul>
+<li>Can only transited from:
+<ul>
+<li><code>RETURN</code></li>
+<li><code>REVERT</code></li>
+<li><code>CALLDATACOPY</code></li>
+<li><code>RETURNDATACOPY</code></li>
+</ul>
+</li>
+<li>Inputs:
+<ul>
+<li><code>src_call_id</code> - id of source call (to be read)</li>
+<li><code>dst_call_id</code> - id of destination call (to be written)</li>
+<li><code>src_end</code> - end of source, it returns <code>0</code> when indexing out of this.</li>
+<li><code>src_offset</code> - memory offset of source call</li>
+<li><code>dst_offset</code> - memory offset of destination call</li>
+<li><code>bytes_left</code> - how many bytes left to copy</li>
+</ul>
+</li>
+<li>Note:
+<ul>
+<li>The <code>src_end</code> is only used by <code>CALLDATACOPY</code> since only it needs padding.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>CopyTxCalldataToMemory</code></p>
+<ul>
+<li>Can only transited from <code>CALLDATACOPY</code></li>
+<li>Inputs:
+<ul>
+<li><code>tx_id</code> - id of current tx</li>
+<li><code>src_end</code> - end of source, it returns <code>0</code> when indexing out of this</li>
+<li><code>src_offset</code> - calldata offset of tx</li>
+<li><code>dst_offset</code> - memory offset of current call</li>
+<li><code>bytes_left</code> - how many bytes left to copy</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>CopyBytecodeToMemory</code></p>
+<ul>
+<li>Can only transited from:
+<ul>
+<li><code>CODECOPY</code></li>
+<li><code>EXTCODECOPY</code></li>
+</ul>
+</li>
+<li>Inputs:
+<ul>
+<li><code>code_hash</code> - hash of bytecode</li>
+<li><code>src_end</code> - end of source, it returns <code>0</code> when indexing out of this</li>
+<li><code>src_offset</code> - calldata offset of tx</li>
+<li><code>dst_offset</code> - memory offset of current call</li>
+<li><code>bytes_left</code> - how many bytes left to copy</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>CopyMemoryToBytecode</code></p>
+<ul>
+<li>Can only transited from:
+<ul>
+<li><code>CREATE</code> - copy init code</li>
+<li><code>CREATE2</code> - copy init code</li>
+<li><code>RETURN</code> - copy deployment code</li>
+</ul>
+</li>
+<li>Inputs:
+<ul>
+<li><code>code_hash</code> - hash of bytecode</li>
+<li><code>src_offset</code> - calldata offset of tx</li>
+<li><code>dst_offset</code> - memory offset of current call</li>
+<li><code>bytes_left</code> - how many bytes left to copy</li>
+</ul>
+</li>
+<li>Note
+<ul>
+<li>This differs from <code>CopyBytecodeToMemory</code> in that it doesn't have padding.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>If we can have a better way to further generalize these inner <code>ExecutionState</code>, we can have less redundant implementation.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>And they do the bytes copy with range check specified by trigger <code>ExecutionState</code>.</p>
+<p>Also these internal <code>ExecutionState</code>s always propagate <code>StepState</code>s as the same value, since the transition is already done by the trigger of <code>ExecutionState</code>.</p>
+<p>Take <code>CALL</code> then <code>CALLDATALOAD</code> as an example:</p>
+<ul>
+<li>Caller executes <code>CALL</code> with stack values (naming referenced from <a href="https://github.com/ethereum/go-ethereum/blob/master/core/vm/instructions.go#L668"><code>instruction.go#L668</code></a>):
+<ul>
+<li><code>inOffset = 32</code></li>
+<li><code>inSize = 32</code></li>
+</ul>
+</li>
+<li>Callee executes <code>CALLDATALOAD</code> with stack values (naming referenced from <a href="https://github.com/ethereum/go-ethereum/blob/master/core/vm/instructions.go#L301-L303"><code>instruction.go#L301-L303</code></a>):
+<ul>
+<li><code>memOffset = 0</code></li>
+<li><code>dataOffset = 64</code></li>
+<li><code>length = 32</code></li>
+</ul>
+</li>
+<li>The first step of <code>CopyMemoryToMemory</code> will receive inputs:
+<ul>
+<li><code>src_call_id = caller_call_id</code></li>
+<li><code>dst_call_id = callee_call_id</code></li>
+<li><code>src_end = inOffset + inSize = 64</code></li>
+<li><code>src_offset = inOffset + dataOffset = 96</code></li>
+<li><code>dst_offset = memOffset = 0</code></li>
+<li><code>bytes_left = length = 32</code></li>
+</ul>
+</li>
+</ul>
+<p>Then, in every step we check if <code>src_offset &lt; src_end</code>, if not, we need to disable the source lookup and fill zeros into destination. Then add the <code>*_offset</code> by the amount of bytes we process at a step, and subtract <code>bytes_left</code> also by it, then propagate them to next step.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>Comparison between the 2 approaches:</p>
+<ul>
+<li>Approach #1
+<ul>
+<li>Pros
+<ul>
+<li>No additional <code>ExecutionState</code></li>
+</ul>
+</li>
+<li>Cons
+<ul>
+<li>Each multi-step opcodes will have at least 3 extra nested branches:
+<ul>
+<li><code>is_first</code> - If the step is the first</li>
+<li><code>not_first</code> - If the step is n-th step</li>
+<li><code>is_final</code> - If the step is final</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Approach #2
+<ul>
+<li>Pros
+<ul>
+<li>Each multi-step opcodes only need to prepare the inputs of those inner <code>ExecutionState</code> and do the correct <code>StepState</code> transition.</li>
+<li>Only 2 nested branches:
+<ul>
+<li><code>not_final</code> - If the step is n-th step</li>
+<li><code>is_final</code> - If the step is final</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Cons
+<ul>
+<li>Additional <code>ExecutionState</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>In the context of current implementation, approach #2 seems easier to implement due to the separation of complexity, and also less prover effort.</p>
+<p>In the context of re-designed EVM circuit (re-use instruction instead of building giant custom gates), it seems no difference on prover effort between the 2 approaches, but approach #2 seems better because it extracts the nested branch and should reduce the usage of rows.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="tx-circuit"><a class="header" href="#tx-circuit">Tx Circuit</a></h1>
+<p>Tx circuit iterates over transactions included in proof to verify each transaction has valid signature. It also verifies the built transaction merkle patricia trie has same root hash as public input.</p>
+<p>Main part of Tx circuit will be instance columns whose evaluation values are built by verifier directly. See the <a href="https://github.com/appliedzkp/zkevm-circuits/issues/122">issue</a> for more details.</p>
+<p>To verify if a transaction has valid signature, it hashes the RLP encoding of transaction and recover the address of signer with signature, then verifies the signer address is correct.</p>
+<p>It serves as a lookup table for EVM circuit to do random access of any field of transaction.</p>
+<p>To prevent any skip of transactions, we verify that the amount of transactions in the Tx circuit is equal to the amount that verified in EVM circuit.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="state-circuit"><a class="header" href="#state-circuit">State Circuit</a></h1>
+<ul>
+<li><a href="architecture/state-circuit.html#introduction">Introduction</a></li>
+<li><a href="architecture/state-circuit.html#concepts">Concepts</a>
+<ul>
+<li><a href="architecture/state-circuit.html#read-write-unit-grouping">Read-write unit grouping</a></li>
+<li><a href="architecture/state-circuit.html#lazy-initialization">Lazy initialization</a></li>
+<li><a href="architecture/state-circuit.html#trie-opening-and-incrementally-update">Trie opening and incrementally update</a></li>
+</ul>
+</li>
+<li><a href="architecture/state-circuit.html#constraints">Constraints</a>
+<ul>
+<li><a href="architecture/state-circuit.html#main"><code>main</code></a></li>
+</ul>
+</li>
+<li><a href="architecture/state-circuit.html#implementation">Implementation</a></li>
+</ul>
+<h1 id="introduction-4"><a class="header" href="#introduction-4">Introduction</a></h1>
+<p>The State circuit iterates over random read-write access records of EVM circuit to verify that each piece of data is consistent between different writes. It also verifies the state merkle patricia trie root hash corresponds to a valid transition from old to new one incrementally, where both are from public input.</p>
+<p>To verify if data is consistent, it first verifies that all access records are grouped by their unique identifier and sorted by order of access. Then verifies that the records between writes are consistent. It also verifies that data is in the correct format.</p>
+<p>It serves as a lookup table for EVM circuit to do consistent random read-write access.</p>
+<p>To prevent any malicious insertion of access record, we also verify the amount of random read-write access records in State circuit is equal to the amount in EVM circuit (the final value of <code>rw_counter</code>).</p>
+<h1 id="concepts-2"><a class="header" href="#concepts-2">Concepts</a></h1>
+<h2 id="read-write-unit-grouping"><a class="header" href="#read-write-unit-grouping">Read-write unit grouping</a></h2>
+<p>The first thing to ensure data is consistent between different writes is to give each data an unique identifier, then group data chunks by the unique identifier. And finally, then sort them by order of access <code>rw_counter</code>.</p>
+<p>Here are all kinds of data with their unique identifier:</p>
+<table><thead><tr><th>Tag</th><th>Unique Index</th><th>Values</th></tr></thead><tbody>
+<tr><td><code>TxAccessListAccount</code></td><td><code>(tx_id, account_address)</code></td><td><code>(is_warm, is_warm_prev)</code></td></tr>
+<tr><td><code>TxAccessListAccountStorage</code></td><td><code>(tx_id, account_address, storage_slot)</code></td><td><code>(is_warm, is_warm_prev)</code></td></tr>
+<tr><td><code>TxRefund</code></td><td><code>(tx_id)</code></td><td><code>(value, value_prev)</code></td></tr>
+<tr><td><code>Account</code></td><td><code>(account_address, field_tag)</code></td><td><code>(value, value_prev)</code></td></tr>
+<tr><td><code>AccountStorage</code></td><td><code>(account_address, storage_slot)</code></td><td><code>(value, value_prev)</code></td></tr>
+<tr><td><code>AccountDestructed</code></td><td><code>(account_address)</code></td><td><code>(is_destructed, is_destructed_prev)</code></td></tr>
+<tr><td><code>CallContext</code></td><td><code>(call_id, field_tag)</code></td><td><code>(value)</code></td></tr>
+<tr><td><code>Stack</code></td><td><code>(call_id, stack_address)</code></td><td><code>(value)</code></td></tr>
+<tr><td><code>Memory</code></td><td><code>(call_id, memory_address)</code></td><td><code>(byte)</code></td></tr>
+</tbody></table>
+<p>Different tags have different constraints on their grouping and values.</p>
+<p>Most tags also keep the previous value <code>*_prev</code> for convenience, which helps reduce the lookup when EVM circuit is performing a write with a <code>diff</code> to the current value, or performing a write with a reversion.</p>
+<h2 id="lazy-initialization"><a class="header" href="#lazy-initialization">Lazy initialization</a></h2>
+<p>EVM's memory expands implicitly, for example, when the memory is empty and it enounters a <code>mload(32)</code>, EVM first expands to memory size to <code>64</code>, and then loads the bytes just initialized to push to the stack, which is always a <code>0</code>.</p>
+<p>The implicit expansion behavior makes even the simple <code>MLOAD</code> and <code>MSTORE</code> complicated in EVM circuit, so we have a trick to outsource the effort to State circuit by constraining the first record of each memory unit to be a write or have value <code>0</code>. It saves the variable amount of effort to expand memory and ignore those never used memory, only used memory addresses will be initlized with <code>0</code> so as lazy initialization.</p>
+<blockquote>
+<p>This concept is also used in another case: the opcode <code>SELFDESTRUCT</code> also has ability to update the variable amount of data. It resets the <code>balance</code>, <code>nonce</code>, <code>code_hash</code>, and every <code>storage_slot</code> even if it's not used in the step. So for each state under account, we can add a <code>revision_id</code> handle such case, see <a href="architecture/./reversible-write-reversion2.html#selfdestruct">Design Notes, Reversible Write Reversion Note2, SELFDESTRUCT</a> for details.
+==TODO== Convert this into an issue for discussion</p>
+<p><strong>han</strong></p>
+</blockquote>
+<h2 id="trie-opening-and-incrementally-update"><a class="header" href="#trie-opening-and-incrementally-update">Trie opening and incrementally update</a></h2>
+<h1 id="constraints-1"><a class="header" href="#constraints-1">Constraints</a></h1>
+<h2 id="main-1"><a class="header" href="#main-1"><code>main</code></a></h2>
+<p>==TODO== Explain each tag</p>
+<!--
+##### `tx_access_list_account`
+##### `tx_access_list_storage_slot`
+##### `tx_refund`
+##### `account_nonce`
+##### `account_balance`
+##### `account_code_hash`
+##### `account_storage`
+##### `call_state`
+##### `stack`
+##### `memory`
+ -->
+<h1 id="implementation-1"><a class="header" href="#implementation-1">Implementation</a></h1>
+<ul>
+<li><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/state-proof.md">spec</a>
+<ul>
+<li><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/src/zkevm_specs/state.py">python</a></li>
+</ul>
+</li>
+<li><a href="https://github.com/appliedzkp/zkevm-circuits/blob/main/zkevm-circuits/src/state_circuit.rs">circuit</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="bytecode-circuit"><a class="header" href="#bytecode-circuit">Bytecode Circuit</a></h1>
+<p>Bytecode circuit iterates over contract bytecodes to verify each bytecode has valid hash.</p>
+<p>It serves as a lookup table for EVM circuit to do random access of any index of bytecode.</p>
+<h1 id="implementation-2"><a class="header" href="#implementation-2">Implementation</a></h1>
+<ul>
+<li><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/bytecode-proof.md">spec</a>
+<ul>
+<li><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/src/zkevm_specs/bytecode.py">python</a></li>
+</ul>
+</li>
+<li><a href="https://github.com/appliedzkp/zkevm-circuits/tree/main/zkevm-circuits/src/bytecode_circuit">circuit</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ecdsa-cicruit"><a class="header" href="#ecdsa-cicruit">ECDSA Cicruit</a></h1>
+<p>ECDSA circuit iterates over signatures to verify recovered public key from signature is valid, or verify signature is invalid.</p>
+<p>It serves as a lookup table for EVM and Tx circuit to do public key recover.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="keccak-circuit"><a class="header" href="#keccak-circuit">Keccak Circuit</a></h1>
+<p>Keccak256 circuit iterates over hashes to verify each hash is valid.</p>
+<p>It serves as a lookup table for EVM, Bytecode, Tx and MPT circuit to do hash.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="merkle-patricia-trie-circuit"><a class="header" href="#merkle-patricia-trie-circuit">Merkle Patricia Trie Circuit</a></h1>
+<p>MPT circuit (Merkle Patricia Trie circuit) iterates over merkle patricia trie transition to verify each update is valid.</p>
+<p>It serves as a lookup table for State and Tx circuit to do merkle patricia trie update.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="design-notes"><a class="header" href="#design-notes">Design Notes</a></h1>
+<p>Here are some collected documents on design notes of the zkEVM.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="random-linear-combination"><a class="header" href="#random-linear-combination">Random Linear Combination</a></h1>
+<ul>
+<li><a href="design/random-linear-combinaion.html#introduction">Introduction</a></li>
+<li><a href="design/random-linear-combinaion.html#concern-on-randomness">Concern on randomness</a>
+<ul>
+<li><a href="design/random-linear-combinaion.html#1-randomness-from-committed-polynomials-with-an-extra-round">1. Randomness from committed polynomials with an extra round</a></li>
+<li><a href="design/random-linear-combinaion.html#2-randomness-from-all-public-inputs-of-circuit">2. Randomness from all public inputs of circuit</a></li>
+</ul>
+</li>
+<li><a href="design/random-linear-combinaion.html#a-minimal-deterministic-system-using-random-linear-combination">A minimal deterministic system using random linear combination</a>
+<ul>
+<li><a href="design/random-linear-combinaion.html#pseudo-code">Pseudo code</a></li>
+<li><a href="design/random-linear-combinaion.html#full-runnable-code">Full runnable code</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="introduction-5"><a class="header" href="#introduction-5">Introduction</a></h2>
+<p>In the circuit, in order to reduce the number of constraints, we use the random linear combination as a cheap hash function on range-checked bytes for two scenarios:</p>
+<ol>
+<li>Encode 32-bytes word (256-bits) in 254-bits field</li>
+<li>Accumulate (or fit/encode) arbitrary-length bytes in 254-bits field</li>
+</ol>
+<p>On the first scenario, it allows us to store an EVM word in a single witness value, without worrying about the fact that a word doesn't fit in the field. Most of the time we move these random linear combination word directly from here to there, and only when we need to perform arithmetic or bitwise operation we will decode the word into bytes (with range check on each byte) to do the actual operation.</p>
+<p>Alternatively we could also store an EVM word in 2 witnes values, representing hi-part and lo-part; but it makes us need to move 2 witnes valuess around for each word. Note that the constraints optimizations obtained by using the random linear combination have not been properly analized yet. </p>
+<p>On the second scenario, it allows us to easily do RLP encoding for a transaction or a merkle (hexary) patricia trie node in a fixed amount of witnesses, without worrying about the fact that RLP encoded bytes could have arbitrary and unlimited length (for MPT node it has a max length, but for tx it doesn't). Each accumulated witness will be further decompress/decomposite/decode into serveral bytes and fed to <code>keccak256</code> as input.</p>
+<blockquote>
+<p>It would be really nice if we can further ask <code>keccak256</code> to accept a accumulated witness and the amount of bytes it contains as inputs.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<h2 id="concern-on-randomness"><a class="header" href="#concern-on-randomness">Concern on randomness</a></h2>
+<p>The way randomness is derived for random linear combination is important: if done improperly, a malicious prover could find a collision to make a seemigly incorrect witness pass the verification (allowing minting Ether from thin air).</p>
+<p>Here are 2 approaches trying to derive a reasonable randomness to mitigate the risk.</p>
+<h3 id="1-randomness-from-committed-polynomials-with-an-extra-round"><a class="header" href="#1-randomness-from-committed-polynomials-with-an-extra-round">1. Randomness from committed polynomials with an extra round</a></h3>
+<p>Assuming we could separate all random linear combined witnesses to different polynomials in our constraint system, we can:</p>
+<ol>
+<li>Commit polynomials except those for random linear combined witnesses</li>
+<li>Derive the randomness from commitments as public input</li>
+<li>Continue the proving process.</li>
+</ol>
+<h3 id="2-randomness-from-all-public-inputs-of-circuit"><a class="header" href="#2-randomness-from-all-public-inputs-of-circuit">2. Randomness from all public inputs of circuit</a></h3>
+<blockquote>
+<p>Update: We should just follow traditional Fiat-Shamir (approach 1), to always commit and generate challenge. Assuming EVM state transition is deterministic is not working for malicious prover.</p>
+</blockquote>
+<p>The public inputs of circuit at least contains:</p>
+<ul>
+<li>Transactions raw data (input)</li>
+<li>Old state trie root (input)</li>
+<li>New state trie root (output)</li>
+</ul>
+<p>Regardless of the fact that the new state trie root could be an incorrect one (in the case of an attack), since the state trie root implies all the bytes it contains (including transaction raw data), if we derive the randomness from all of them, the malicious prover needs to first decide what's the new (incorrect) state trie root and then find the collisions with input and output.  This somehow limits the possible collision pairs because the input and output are also fixed.</p>
+<h2 id="a-minimal-deterministic-system-using-random-linear-combination"><a class="header" href="#a-minimal-deterministic-system-using-random-linear-combination">A minimal deterministic system using random linear combination</a></h2>
+<p>The following example shows how the random linear combination is used to compare equality of words using a single witness value.</p>
+<p>Suppose a deterministic virtual machine consists of 2 opcodes <code>PUSH32</code> and <code>ADD</code>, and the VM runs as a pure function <code>run</code> as described:</p>
+<h3 id="pseudo-code"><a class="header" href="#pseudo-code">Pseudo code</a></h3>
+<pre><code class="language-python">def randomness_approach_2(bytecode: list, claimed_output: list) -&gt; int:
+    return int.from_bytes(keccak256(bytecode + claimed_output), 'little') % FP
+
+def run(bytecode: list, claimed_output: list):
+    &quot;&quot;&quot;
+    run takes bytecode to execute and treat the top of stack as output in the end.
+    &quot;&quot;&quot;
+
+    # Derive randomness
+    r = randomness_approach_2(bytecode, claimed_output)
+
+    # Despite an EVM word is 256-bit which is larger then field size, we store it
+    # as random linear combination in stack. Top value is in the end of the list.
+    stack = []
+
+    program_counter = 0
+    while program_counter &lt; len(bytecode):
+        opcode = bytecode[program_counter]
+
+        # PUSH32
+        if opcode == 0x00:
+            # Read next 32 bytes as an EVM word from bytecode
+            bytes = bytecode[program_counter+1:program_counter+33]
+            # Push random linear combination of the EVM word to stack
+            stack.append(random_linear_combine(bytes, r))
+            program_counter += 33
+        # ADD
+        elif opcode == 0x01:
+            # Pop 2 random linear combination EVM word from stack
+            a, b = stack.pop(), stack.pop()
+            # Decompress them into little-endian bytes
+            bytes_a, bytes_b = rlc_to_bytes[a], rlc_to_bytes[b]
+            # Add them together
+            bytes_c = add_bytes(bytes_a, bytes_b)
+            # Push result as random linear combination to stack
+            stack.append(random_linear_combine(bytes_c, r))
+            program_counter += 1
+        else:
+            raise ValueError(&quot;invalid opcode&quot;)
+
+    assert rlc_to_bytes[stack.pop()] == claimed_output, &quot;unsatisfied&quot;
+</code></pre>
+<h3 id="full-runnable-code"><a class="header" href="#full-runnable-code"><a href="design/./random-linear-combinaion/full-runnable-code.html">Full runnable code</a></a></h3>
+<p>All the random linear combination or decompression will be constraint in PLONK constraint system, where the randomness is fed as public input.</p>
+<p>The randomness is derived from both input and output (fed to keccak256), which corresponds to <a href="design/random-linear-combinaion.html#2-Randomness-from-all-public-inputs-of-circuit">approach 2</a>. Although it uses raw value in bytes instead of hashed value, but assuming the keacck256 and the merkle (hexary) patricia trie in Ethereum are collision resistant, it should be no big differece between the two cases.</p>
+<p>The issue at least reduces to: <strong>Whether a malicious prover can find collisions between stack push and pop, after it decides the input and output</strong>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="random-linear-combination-full-runnable-code"><a class="header" href="#random-linear-combination-full-runnable-code">Random Linear Combination full runnable code</a></h1>
+<pre><code class="language-python">from Crypto.Hash import keccak
+from Crypto.Random.random import randrange
+
+
+def keccak256(data: list) -&gt; list:
+    return list(keccak.new(digest_bits=256).update(bytes(data)).digest())
+
+
+# BN254 scalar field size.
+FP = 21888242871839275222246405745257275088548364400416034343698204186575808495617
+
+
+def fp_add(a: int, b: int) -&gt; int: return (a + b) % FP
+def fp_mul(a: int, b: int) -&gt; int: return (a * b) % FP
+
+
+# rlc_to_bytes records the original bytes of a random linear combination.
+# In circuit we ask prover the provide bytes and verify all bytes are in range
+# and the random linear combination matches.
+rlc_to_bytes = dict()
+
+
+def random_linear_combine(bytes: list, r: int) -&gt; int:
+    &quot;&quot;&quot;
+    random_linear_combine returns bytes[0] + r*bytes[1] + ... + (r**31)*bytes[31].
+    &quot;&quot;&quot;
+
+    rlc = 0
+    for byte in reversed(bytes):
+        assert 0 &lt;= byte &lt; 256
+        rlc = fp_add(fp_mul(rlc, r), byte)
+
+    rlc_to_bytes[rlc] = bytes
+
+    return rlc
+
+
+def add_bytes(lhs: list, rhs: list) -&gt; list:
+    &quot;&quot;&quot;
+    add_bytes adds 2 little-endian bytes value modulus 2**256 and returns result
+    as bytes also in little-endian.
+    &quot;&quot;&quot;
+
+    result = (
+        int.from_bytes(lhs, 'little') +
+        int.from_bytes(rhs, 'little')
+    ) % 2**256
+
+    return list(result.to_bytes(32, 'little'))
+
+
+def randomness_approach_2(bytecode: list, claimed_output: list) -&gt; int:
+    return int.from_bytes(keccak256(bytecode + claimed_output), 'little') % FP
+
+
+def run(bytecode: list, claimed_output: list):
+    &quot;&quot;&quot;
+    run takes bytecode to execute and treat the top of stack as output in the end.
+    &quot;&quot;&quot;
+
+    # Derive randomness
+    r = randomness_approach_2(bytecode, claimed_output)
+
+    # Despite an EVM word is 256-bit which is larger then field size, we store it
+    # as random linear combination in stack. Top value is in the end of the list.
+    stack = []
+
+    program_counter = 0
+    while program_counter &lt; len(bytecode):
+        opcode = bytecode[program_counter]
+
+        # PUSH32
+        if opcode == 0x00:
+            # Read next 32 bytes as an EVM word from bytecode
+            bytes = bytecode[program_counter+1:program_counter+33]
+            # Push random linear combination of the EVM word to stack
+            stack.append(random_linear_combine(bytes, r))
+            program_counter += 33
+        # ADD
+        elif opcode == 0x01:
+            # Pop 2 random linear combination EVM word from stack
+            a, b = stack.pop(), stack.pop()
+            # Decompress them into little-endian bytes
+            bytes_a, bytes_b = rlc_to_bytes[a], rlc_to_bytes[b]
+            # Add them together
+            bytes_c = add_bytes(bytes_a, bytes_b)
+            # Push result as random linear combination to stack
+            stack.append(random_linear_combine(bytes_c, r))
+            program_counter += 1
+        else:
+            raise ValueError(&quot;invalid opcode&quot;)
+
+    assert rlc_to_bytes[stack.pop()] == claimed_output, &quot;unsatisfied&quot;
+
+
+def test_run():
+    a, b = randrange(0, 2**256), randrange(0, 2**256)
+    c = (a + b) % 2**256
+    run(
+        bytecode=[
+            0x00, *a.to_bytes(32, 'little'),  # PUSH32 a
+            0x00, *b.to_bytes(32, 'little'),  # PUSH32 b
+            0x01                              # ADD
+        ],
+        claimed_output=list(c.to_bytes(32, 'little')),
+    )
+
+
+test_run()
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="recursion"><a class="header" href="#recursion">Recursion</a></h1>
+<ul>
+<li><a href="design/recursion.html#projects">Projects</a>
+<ul>
+<li><a href="design/recursion.html#aztec-barretenberg">Aztec barretenberg</a>
+<ul>
+<li><a href="design/recursion.html#transcript-for-inner-cirucit">Transcript for inner cirucit</a></li>
+<li><a href="design/recursion.html#public-inputs-of-inner-circuit">Public inputs of inner circuit</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="design/recursion.html#calculations">Calculations</a>
+<ul>
+<li><a href="design/recursion.html#interpolation">Interpolation</a>
+<ul>
+<li><a href="design/recursion.html#barycentric-formula-">Barycentric formula </a></li>
+<li><a href="design/recursion.html#interpolation-of-rotation-set">Interpolation of rotation set</a></li>
+<li><a href="design/recursion.html#interpolation-of-public-inputs">Interpolation of public inputs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="design/recursion.html#random-thoughts">Random thoughts</a>
+<ul>
+<li><a href="design/recursion.html#use-multi-layer-recursive-proof-for-zkevm">Use multi-layer recursive proof for ZKEVM</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="projects"><a class="header" href="#projects">Projects</a></h2>
+<ul>
+<li><a href="https://github.com/AztecProtocol/barretenberg">https://github.com/AztecProtocol/barretenberg</a></li>
+<li><a href="https://github.com/scroll-tech/halo2-snark-aggregator">https://github.com/scroll-tech/halo2-snark-aggregator</a></li>
+<li><a href="https://github.com/trapdoor-Tech/halo2-aggregation">https://github.com/trapdoor-Tech/halo2-aggregation</a></li>
+<li><a href="https://github.com/matter-labs/solidity_plonk_verifier/tree/recursive">https://github.com/matter-labs/solidity_plonk_verifier/tree/recursive</a></li>
+</ul>
+<h3 id="aztec-barretenberg"><a class="header" href="#aztec-barretenberg">Aztec barretenberg</a></h3>
+<h4 id="transcript-for-inner-cirucit"><a class="header" href="#transcript-for-inner-cirucit">Transcript for inner cirucit</a></h4>
+<p>The rollup circuit uses blake2s to generate the challenge, but with compressed input by pedersen hash <sup class="footnote-reference"><a href="#barretenberg-transcript">1</a></sup>. The inputs are serialized into a list of 31 bytes field elements as the input of pedersen hash.</p>
+<p>Also the rollup circuit use 128-bits challenge to reduce MSM work, then most of scalars are 128-bits, only those scalars multiplied with some other stuff (e.g. \(\zeta\omega^i\) or batch evaluation) would need 254-bits MSM.</p>
+<div class="footnote-definition" id="barretenberg-transcript"><sup class="footnote-definition-label">1</sup>
+<p><a href="https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/transcript/transcript.cpp#L128-L130">https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/transcript/transcript.cpp#L128-L130</a></p>
+</div>
+<h4 id="public-inputs-of-inner-circuit"><a class="header" href="#public-inputs-of-inner-circuit">Public inputs of inner circuit</a></h4>
+<p>Barretenberg handles the public inputs along with permutation argument <sup class="footnote-reference"><a href="#barretenberg-permutation-widget">2</a></sup>. Its constraint system implicitly copies \(m\) public inputs \(p\) to first \(m\) witness of the first column, and because the public inputs' contribution \(\frac{1}{\delta}\) to the grand product is easy to compute, so it doesn't need to evaluate public inputs poly at \(\zeta\). Instead, it verifies grand product's final value is the contribution \(\delta\).</p>
+<p>$$
+\frac{1}{\delta} = \prod_{i\in[m]}\left(\frac{p_i + \beta\omega^i + \gamma}{p_i + \beta k_{p}\omega^i + \gamma}\right)
+$$</p>
+<blockquote>
+<p>Not sure if this is cheaper than calculating evaluation of public inputs, but it's really intersting.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>The actual verifier doesn't calculate the \(\frac{1}{\delta}\) for inner circuit, it just concatenates all the public inputs and let rollup circuit to calculate \(\frac{1}{\delta}\) for each inner circuit.</p>
+<div class="footnote-definition" id="barretenberg-permutation-widget"><sup class="footnote-definition-label">2</sup>
+<p>Explaination: <a href="https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/proof_system/public_inputs/public_inputs_impl.hpp#L5-L137">https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/proof_system/public_inputs/public_inputs_impl.hpp#L5-L137</a> <br>Used in permutation widget: <a href="https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/proof_system/widgets/random_widgets/permutation_widget_impl.hpp#L368-L369">https://github.com/AztecProtocol/barretenberg/blob/master/barretenberg/src/aztec/plonk/proof_system/widgets/random_widgets/permutation_widget_impl.hpp#L368-L369</a></p>
+</div>
+<h2 id="calculations"><a class="header" href="#calculations">Calculations</a></h2>
+<h3 id="interpolation"><a class="header" href="#interpolation">Interpolation</a></h3>
+<h4 id="barycentric-formula-3"><a class="header" href="#barycentric-formula-3">Barycentric formula <sup class="footnote-reference"><a href="#barycentric-formula">3</a></sup></a></h4>
+<p>Using</p>
+<p>$$
+\begin{aligned}
+&amp; \ell(x) = (x-x_0)(x-x_1)\cdots(x-x_k) \
+&amp; \ell^\prime(x_j) = \frac{d\ell(x)}{dx}\rvert_{x=x_j} = \prod_{i=0,i\ne j}^k(x_j-x_i)
+\end{aligned}
+$$</p>
+<p>We can rewrite Lagrange basis as</p>
+<p>$$
+\ell_j(x) = \frac{\ell(x)}{\ell^\prime(x_j)(x-x_j)}
+$$</p>
+<p>Or by defining the <em>barycentric weights</em></p>
+<p>$$
+w_j = \frac{1}{\ell^\prime(x_j)}
+$$</p>
+<p>Then given evaluations ${y_i}<em>{i\in[k]} = {f(x_i)}</em>{i\in[k]}$ of polynomial \(f\), the interpolation of \(f\) now can be evaluated as</p>
+<p>$$
+f(x) = \ell(x) \sum_{j=0}^k\frac{w_j}{x-x_j}y_j
+$$</p>
+<p>Which, if the weights \(w_j\) can be pre-computed, requires only \(\mathcal{O}(k)\) as opposed to \(\mathcal{O}(k^2)\) for evaluating the Lagrange basis \(\ell_j(x)\) individually.</p>
+<p>We can furthers simplify it by considering the barycentric interpolation of the constant function \(g(x) = 1\)</p>
+<p>$$
+g(x) = 1 = \ell(x) \sum_{j=0}^k\frac{w_j}{x-x_j}
+$$</p>
+<p>Divigin \(f(x)\) by \(g(x) = 1\) doesn't modify the interpolation, yet yields</p>
+<p>$$
+f(x) = \frac{\sum_{j=0}^k\frac{w_j}{x-x_j}y_j}{\sum_{j=0}^k\frac{w_j}{x-x_j}}
+$$</p>
+<p>Then we don't even need to evaluate \(\ell(x)\).</p>
+<div class="footnote-definition" id="barycentric-formula"><sup class="footnote-definition-label">3</sup>
+<p><a href="https://people.maths.ox.ac.uk/trefethen/barycentric.pdf">https://people.maths.ox.ac.uk/trefethen/barycentric.pdf</a> <br><a href="https://en.wikipedia.org/wiki/Lagrange_polynomial#Barycentric_form">https://en.wikipedia.org/wiki/Lagrange_polynomial#Barycentric_form</a></p>
+</div>
+<h4 id="interpolation-of-rotation-set"><a class="header" href="#interpolation-of-rotation-set">Interpolation of rotation set</a></h4>
+<p>Defining rotation set \(R\) contains \(k\) different points \({\zeta_1\omega_j}_{j\in[k]}\), where \(\zeta_1\) is the challenge opening point, and \(\omega_i\) are the generator to some power (a.k.a rotation).</p>
+<blockquote>
+<p>Not sure if all arguments of halo2 in the future still have the same opening base \(\zeta_1\) for all queries to multiopen. If not, this approach might not work. An implementation can be found <a href="https://github.com/han0110/halo2/blob/feature%2Fbarycentric-for-r/halo2_proofs/src/poly/multiopen/shplonk/verifier.rs#L60-L99">here</a>.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>In SHPLONK, the verifier needs to calculate interpolation \(r(\zeta_{2})\) from rotation set \(R\) and their claimed evaluation value \({y_j}_{j\in[k]}\).</p>
+<p>One of the largest benefit of barycentric formula is pre-computed barycentric weight. Although \(R\) contains different values in each proof, we can still pre-compute the normalized barycentric weight without \(\zeta_1\), to gain the benefit.</p>
+<p>$$
+w_j = \frac{1}{\prod_{i=0,i\ne j}^k(\omega_j-\omega_i)}
+$$</p>
+<p>And for each rotation set, the actual work is </p>
+<p>$$
+w_j^\prime = \frac{w_j}{\zeta_1^{k-1} * (\zeta_2 - \zeta_1\omega_j)}
+$$</p>
+<p>Also each rotation set might contain more than one polynomials, for each polynomial, its work is</p>
+<p>$$
+r(\zeta_2) = \frac{\sum_{j=0}^kw_j^\prime y_j}{\sum_{j=0}^kw_j^\prime}
+$$</p>
+<p>Where the denominator for one set only needs to be calcuated once.</p>
+<h4 id="interpolation-of-public-inputs"><a class="header" href="#interpolation-of-public-inputs">Interpolation of public inputs</a></h4>
+<p>All lagrange basis could be rotated from the $\ell_0(X) = \frac{X^n-1}{n(X-1)}$</p>
+<p>$$
+\ell_i(X) = \ell_0(X\omega^{-i}) = \frac{X^n-1}{n(X\omega^{-i}-1)}
+$$</p>
+<p>Given \(m\) public inputs \(p\), the interpolation at \(\zeta\) is</p>
+<p>$$
+p(\zeta) = \sum_{i\in[m]}p_i\ell_i(\zeta) = \frac{\zeta^n-1}{n}\sum_{i\in[m]}\frac{p_i}{(\zeta\omega^{-i}) - 1}
+$$</p>
+<p>Note that \(\frac{\zeta^n-1}{n}\) needs \(\log_2(n)\) squaring of \(\zeta\) with a substraction and a division.</p>
+<p>And each extra public input costs about 4 operations (mul + sub + div + add).</p>
+<h2 id="random-thoughts"><a class="header" href="#random-thoughts">Random thoughts</a></h2>
+<h3 id="use-multi-layer-recursive-proof-for-zkevm"><a class="header" href="#use-multi-layer-recursive-proof-for-zkevm">Use multi-layer recursive proof for ZKEVM</a></h3>
+<p>In our case, we have split ZKEVM into different pieces, with some dependency relation in between.</p>
+<p>Fortunately, the dependency relation currently is always being like: One verified circuit serves itself as a lookup table for another. For example, once State circuit is verified to satasify its own relation, then we can synthesize its columns to be a lookup table for EVM circuit to do random access.</p>
+<p>Serving self as a lookup table only needs to pass a single check, that is the table commitment(s) (random linearly combined or not). And the difference between fixed table and such verified private table is: The former is built when setup so it is already trusted, the latter is verified for each proof instance and is trusted as long as the relation is well-defined.</p>
+<p>So, if a single recursive circuit can't aggregate all different circuits in ZKEVM, we can incrementally aggregate them, and only expose the verified private table's commitment(s) as public input, for next proofs' aggregation.</p>
+<blockquote>
+<p>If we can have some kinds of &quot;global randomness&quot;, we can do vector table's random linear combination first, then the extra public input for exposing verified private table is just a single group element (4 values in rns).</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>Illustration of serially aggregating State circuit and EVM circuit:</p>
+<p><img src="design/./recursion_aggregation-serial.png" alt="" /></p>
+<sub style="bottom: 1em; left: 1em">
+1. Accumulated proof which contains LHS and RHS of pairing <br>
+2. RW Table contains 10 commitments which are verified to open to desired synthesized expressions
+</sub>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="reversible-write-reversion-1"><a class="header" href="#reversible-write-reversion-1">Reversible Write Reversion</a></h1>
+<p>Reversible write reversion might be the most tricky part to explain of the EVM circuit. This note aims to illustrate how the current approach works with some diagrams, and collect all the other approaches for comparison.</p>
+<h2 id="revert-or-not"><a class="header" href="#revert-or-not">Revert or not</a></h2>
+<p>With full execution trace of a block, if we iterate over it once, we can know if each call (including create) is successful or not, and then determine which reversible writes are persistent, and which are not.</p>
+<p>So each call could be annotated with 2 tags:</p>
+<ul>
+<li><code>is_success</code> - If this call ends with <code>STOP</code> or <code>RETURN</code></li>
+<li><code>is_persistent</code> - If this call and all its caller have <code>is_success == true</code></li>
+</ul>
+<p>Only reversible writes inside a call with <code>is_persistent == true</code> will be applied to the new state.  Reversible writes in a call with <code>is_persistent == false</code> will be reverted at the closest call that has <code>is_success == false</code>.</p>
+<h2 id="current-approach"><a class="header" href="#current-approach">Current approach</a></h2>
+<p>Since the only requirement of a read/write access is <code>rw_counter</code> uniqueness, we are not restricted to only do read/writes with sequential <code>rw_counter</code> in a step, instead we can do read/write with any <code>rw_counter</code>, as long as we don't break the <code>rw_counter</code> uniqueness requirement.</p>
+<p>We ask the prover to tell us each call's information including:</p>
+<ul>
+<li><code>is_success</code> - Described above</li>
+<li><code>is_persistent</code> - Described above</li>
+<li><code>rw_counter_end_of_reversion</code> - The <code>rw_counter</code> at the end of reversion of the call if it has <code>is_persistent == false</code></li>
+</ul>
+<p>In EVM circuit we track the value <code>reversible_write_counter</code> to count how many reversible writes have been made so far.  This value is initialized at <code>0</code> of each call.</p>
+<p>With <code>is_persistent</code>, <code>rw_counter_end_of_reversion</code> and <code>reversible_write_counter</code>, we can do the reversible write with its corresponding reversion at the same step, because we know at which point it should happen. The pseudo code of reversible write looks like:</p>
+<pre><code class="language-python">rw_table.lookup(
+    rw_counter=rw_counter,
+    reversible_write=reversible_write, # write to new value
+)
+
+if not is_persistent:
+    rw_table.lookup(
+        rw_counter=rw_counter_end_of_reversion - reversible_write_counter,
+        reversible_write=reversible_write.reverted(), # write to previous value
+    )
+
+rw_counter += 1
+reversible_write_counter += 1
+</code></pre>
+<p>Note that the we are increasing the <code>reversible_write_counter</code>, so the reversions are applied in reverse order in <code>rw_table</code>, which is exactly the behavior we want.</p>
+<p>Another important check is to ensure <code>rw_counter_end_of_reversion</code> is correct. At the step that does the reversions, we check if there is a gap of <code>rw_counter</code> to the next step, where the gap size is exactly the <code>reversible_write_counter</code>. And in the end of the gap, the <code>rw_counter</code> is exactly <code>rw_counter_end_of_reversion</code>. The pseudo code looks like:</p>
+<pre><code class="language-python">if not is_persistent:
+    assert rw_counter_end_of_reversion == rw_counter + reversible_write_counter
+    rw_counter = call.rw_counter_end_of_reversion + 1
+</code></pre>
+<p>With illustration:</p>
+<p><img src="design/./state-write-reversion_reversion-simple.png" alt="" /></p>
+<p>The step that does the reversions is also responsible for reversions of its successful callees. Note that each callee's <code>reversible_write_counter</code> is initialized at <code>0</code>.  To make sure they can do the reversion at correct <code>rw_counter</code>, we need to propagate the <code>rw_counter_end_of_reversion</code> to be itself minus the current accumulated <code>reversible_write_counter</code>. The pseudo code looks like:</p>
+<pre><code class="language-python">if not is_persistent and callee_is_success:
+    assert callee_rw_counter_end_of_reversion \
+        == rw_counter_end_of_reversion - reversible_write_counter
+</code></pre>
+<p><img src="design/./state-write-reversion_reversion-nested.png" alt="" /></p>
+<p>At the end of successful callee, we accumulate the <code>reversible_write_counter</code> to its caller.</p>
+<h3 id="adjustment-for-selfdestruct"><a class="header" href="#adjustment-for-selfdestruct">Adjustment for <code>SELFDESTRUCT</code></a></h3>
+<p>See <a href="design/./reversible-write-reversion2.html#selfdestruct">Design Notes, Reversible Write Reversion Note2, SELFDESTRUCT</a></p>
+<h2 id="other-approaches"><a class="header" href="#other-approaches">Other approaches</a></h2>
+<h3 id="with-revision_id"><a class="header" href="#with-revision_id">With <code>revision_id</code></a></h3>
+<p>TODO</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="reversible-write-reversion-note-2"><a class="header" href="#reversible-write-reversion-note-2">Reversible Write Reversion Note 2</a></h1>
+<h1 id="zkevm---state-circuit-extension---statedb"><a class="header" href="#zkevm---state-circuit-extension---statedb">ZKEVM - State Circuit Extension - <code>StateDB</code></a></h1>
+<h2 id="reversion"><a class="header" href="#reversion">Reversion</a></h2>
+<p>In EVM, there are multiple kinds of <code>StateDB</code> updates that could be reverted when any internal call fails.</p>
+<ul>
+<li><code>tx_access_list_account</code> - <code>(tx_id, address) -&gt; accessed</code></li>
+<li><code>tx_access_list_storage_slot</code> - <code>(tx_id, address, storage_slot) -&gt; accessed</code></li>
+<li><code>account_nonce</code> - <code>address -&gt; nonce</code></li>
+<li><code>account_balance</code> - <code>address -&gt; balance</code></li>
+<li><code>account_code_hash</code> - <code>address -&gt; code_hash</code></li>
+<li><code>account_storage</code> - <code>(address, storage_slot) -&gt; storage</code></li>
+</ul>
+<p>The complete list can be found <a href="https://github.com/ethereum/go-ethereum/blob/master/core/state/journal.go#L87-L141">here</a>.  For <code>tx_refund</code>, <code>tx_log</code>, <code>account_destructed</code> we don't need to write and revert because those state changes don't affect future execution, so we only write them when <code>is_persistent=1</code>.</p>
+<h3 id="visualization"><a class="header" href="#visualization">Visualization</a></h3>
+<p><img src="design/./state-write-reversion2_call-depth.png" alt="" /></p>
+<ul>
+<li>Black arrow represents the time, which is composed by points of sequential <code>rw_counter</code>.</li>
+<li>Red circle represents the revert section.</li>
+</ul>
+<p>The actions that write to the <code>StateDB</code> inside the red box will also revert themselves in the revert section (red circle), but in reverse order.</p>
+<p>Each call needs to know its <code>rw_counter_end_of_revert_section</code> to revert with the correct <code>rw_counter</code>. If callee is a success call but in some red box (<code>is_persistent=0</code>), we need to copy caller's <code>rw_counter_end_of_revert_section</code> and <code>reversible_write_counter</code> to callee's.</p>
+<h2 id="selfdestruct"><a class="header" href="#selfdestruct"><code>SELFDESTRUCT</code></a></h2>
+<p>The opcode <code>SELFDESTRUCT</code> sets the flag <code>is_destructed</code> of the account, but before that transaction ends, the account can still be executed, receive ether, and access storage as usual. The flag <code>is_destructed</code> takes effect only after a transaction ends.</p>
+<p>In particular, the state trie gets finalized after each transaction, and only when state trie gets finalized the account is actually deleted. After the transaction with <code>SELFDESTRUCT</code> is finalized, any further transaction treats the account as an empty account.</p>
+<blockquote>
+<p>So if some contract executed <code>SELFDESTRUCT</code> but then receive some ether, those ether will vanish into thin air after the transaction is finalized. Soooo weird.</p>
+<p><strong>han</strong></p>
+</blockquote>
+<p>The <code>SELFDESTRUCT</code> is a powerful opcode that makes many state changes at the same time including:</p>
+<ul>
+<li><code>account_nonce</code></li>
+<li><code>account_balance</code></li>
+<li><code>account_code_hash</code></li>
+<li>all slots of <code>account_storage</code></li>
+</ul>
+<p>The first 3 values are relatively easy to handle in circuit: we could track an extra <code>selfdestruct_counter</code> and <code>rw_counter_end_of_tx</code> and set them to empty value at <code>rw_counter_end_of_tx - selfdestruct_counter</code>, which is just how we handle reverts.</p>
+<p>However, the <code>account_storage</code> is tricky because we don't track the storage trie and update it after each transaction, instead we only track each used slot in storage trie and update the storage trie after the whole block.</p>
+<h3 id="workaround-for-consistency-check"><a class="header" href="#workaround-for-consistency-check">Workaround for consistency check</a></h3>
+<p>It seems that we need to annotate each account with a <code>revision_id</code>. The <code>revision_id</code> increases only when <code>is_destructed</code> is set and <code>tx_id</code> changes. With the different <code>revision_id</code>s we can reset the values in State circuit for <code>nonce</code>, <code>balance</code>, <code>code_hash</code>, and each <code>storage</code> just like we initialize the memroy.</p>
+<p>So <code>address -&gt; is_destructed</code> becomes <code>(tx_id, address) -&gt; (revision_id, is_destructed)</code>.</p>
+<p>Then we add an extra <code>revision_id</code> to <code>nonce</code>, <code>balance</code>, <code>code_hash</code> and <code>storage</code>. For <code>nonce</code>, <code>balance</code> and <code>code_hash</code> we group them by <code>(address, revision_id) -&gt; {nonce,balance,code_hash}</code>, for <code>storage</code> we group them by <code>(address, storage_slot, revision_id) -&gt; storage_value</code>.</p>
+<p>Here is an example of <code>account_balance</code> with <code>revision_id</code>:</p>
+<p>$$
+\begin{array}{|c|c|}
+\hline
+\texttt{address} &amp; \texttt{revision_id} &amp; \texttt{rwc} &amp; \texttt{balance} &amp; \texttt{balance_prev} &amp; \texttt{is_write} &amp; \text{note} \\\hline
+\color{#aaa}{\texttt{0xfd}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} \\\hline
+\texttt{0xfe} &amp; \texttt{1} &amp; \color{#aaa}{\texttt{x}} &amp; \texttt{10} &amp; \color{#aaa}{\texttt{x}} &amp; \texttt{1} &amp; \text{open from trie} \\\hline
+\texttt{0xfe} &amp; \texttt{1} &amp; \texttt{23} &amp; \texttt{20} &amp; \texttt{10} &amp; \texttt{1} \\\hline
+\texttt{0xfe} &amp; \texttt{1} &amp; \texttt{45} &amp; \texttt{20} &amp; \texttt{20} &amp; \texttt{0} \\\hline
+\texttt{0xfe} &amp; \texttt{1} &amp; \texttt{60} &amp; \texttt{0} &amp; \texttt{20} &amp; \texttt{1} \\\hline
+\texttt{0xfe} &amp; \color{#f00}{\texttt{1}} &amp; \texttt{63} &amp; \texttt{5} &amp; \texttt{0} &amp; \texttt{1} \\\hline
+\texttt{0xfe} &amp; \color{#f00}{\texttt{2}} &amp; \color{#aaa}{\texttt{x}} &amp; \color{#f00}{\texttt{0}} &amp; \color{#aaa}{\texttt{x}} &amp; \texttt{1} &amp; \text{reset} \\\hline
+\texttt{0xfe} &amp; \texttt{2} &amp; \texttt{72} &amp; \texttt{0} &amp; \texttt{0} &amp; \texttt{0} \\\hline
+\color{#aaa}{\texttt{0xff}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} \\\hline
+\end{array}
+$$</p>
+<p>Note that after contract selfdestructs, it can still receive ether, but the ether will vanish into thin air after transaction gets finalized. The reset is like the lazy initlization of memory, <strong>the value is set to <code>0</code> when <code>revision_id</code> is different</strong>.</p>
+<p>Here is how we increase the <code>revision_id</code>:</p>
+<p>$$
+\begin{array}{|c|c|}
+\hline
+\texttt{address} &amp; \texttt{tx_id} &amp; \texttt{rwc} &amp; \texttt{revision_id} &amp; \texttt{is_destructed} &amp; \texttt{is_destructed_prev} &amp; \texttt{is_write} &amp; \text{note} \\\hline
+\color{#aaa}{\texttt{0xfd}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} \\\hline
+\texttt{0xff} &amp; \texttt{1} &amp; \color{#aaa}{\texttt{x}} &amp; \texttt{1} &amp; \texttt{0} &amp; \color{#aaa}{\texttt{x}} &amp; \texttt{1} &amp; \text{init} \\\hline
+\texttt{0xff} &amp; \texttt{1} &amp; \texttt{11} &amp; \texttt{1} &amp; \texttt{0} &amp; \texttt{0} &amp; \texttt{0} \\\hline
+\texttt{0xff} &amp; \texttt{1} &amp; \texttt{17} &amp; \texttt{1} &amp; \texttt{1} &amp; \texttt{0} &amp; \texttt{1} &amp; \text{self destruct} \\\hline
+\texttt{0xff} &amp; \color{#f00}{\texttt{1}} &amp; \texttt{29} &amp; \texttt{1} &amp; \color{#f00}{\texttt{1}} &amp; \texttt{1} &amp; \texttt{1} &amp; \text{self destruct again} \\\hline
+\texttt{0xff} &amp; \color{#f00}{\texttt{2}} &amp; \color{#aaa}{\texttt{x}} &amp; \color{#f00}{\texttt{2}} &amp; \texttt{0} &amp; \color{#aaa}{\texttt{x}} &amp; \texttt{1} &amp; \text{increase} \\\hline
+\texttt{0xff} &amp; \texttt{2} &amp; \texttt{40} &amp; \texttt{2} &amp; \texttt{0} &amp; \texttt{0} &amp; \texttt{0} \\\hline
+\texttt{0xff} &amp; \texttt{3} &amp; \color{#aaa}{\texttt{x}} &amp; \texttt{2} &amp; \texttt{0} &amp; \color{#aaa}{\texttt{x}} &amp; \texttt{1} &amp; \text{no increase} \\\hline
+\color{#aaa}{\texttt{0xff}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} &amp; \color{#aaa}{\texttt{-}} \\\hline
+\end{array}
+$$</p>
+<p>Because self destruct only takes effect after the transaction, we <strong>increase the <code>revision_id</code> only when <code>tx_id</code> is different and <code>is_destructed</code> is set</strong>.</p>
+<h3 id="workaround-for-trie-update"><a class="header" href="#workaround-for-trie-update">Workaround for trie update</a></h3>
+<p>The State circuit not only checks consistency, it also triggers the update of the storage tries and state trie.</p>
+<p>Originally, some part of State circuit would assign the first row value and collect the last row value of each account's <code>nonce</code>, <code>balance</code>, <code>code_hash</code> as well as the first &amp; last used slots of storage, then update the state trie.</p>
+<p>With <code>revision_id</code>, it needs to peek the final <code>revision_id</code> first, and collect the last row value with the <code>revision_id</code> to make sure all values are actually reset.</p>
+<h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
+<ul>
+<li><a href="https://github.com/ethereum/go-ethereum/blob/master/core/state/journal.go"><code>journal.go</code></a></li>
+<li><a href="https://hackmd.io/@vbuterin/selfdestruct#SELFDESTRUCT-is-the-only-opcode-that-breaks-important-invariants">Pragmatic destruction of <code>SELFDESTRUCT</code></a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        <script type="text/javascript" src="mermaid.min.js"></script>
+        <script type="text/javascript" src="mermaid-init.js"></script>
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            MathJax.Hub.Register.StartupHook('End', function() {
+                window.setTimeout(window.print, 100);
+            });
+        });
+        </script>
+    </body>
+</html>

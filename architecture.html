@@ -1,0 +1,238 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Circuit Architecture - zkEVM (Community Edition) Documentation</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="architecture.html" class="active"><strong aria-hidden="true">2.</strong> Circuit Architecture</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="architecture/evm-circuit.html"><strong aria-hidden="true">2.1.</strong> EVM Circuit</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="architecture/evm-circuit/opcode-fetching.html"><strong aria-hidden="true">2.1.1.</strong> Opcode Fetching</a></li><li class="chapter-item expanded "><a href="architecture/evm-circuit/multi-step.html"><strong aria-hidden="true">2.1.2.</strong> Multi-Step Implementation</a></li></ol></li><li class="chapter-item expanded "><a href="architecture/tx-circuit.html"><strong aria-hidden="true">2.2.</strong> Tx Circuit</a></li><li class="chapter-item expanded "><a href="architecture/state-circuit.html"><strong aria-hidden="true">2.3.</strong> State Circuit</a></li><li class="chapter-item expanded "><a href="architecture/bytecode-circuit.html"><strong aria-hidden="true">2.4.</strong> Bytecode Circuit</a></li><li class="chapter-item expanded "><a href="architecture/ecdsa-circuit.html"><strong aria-hidden="true">2.5.</strong> ECDSA Circuit</a></li><li class="chapter-item expanded "><a href="architecture/keccak-circuit.html"><strong aria-hidden="true">2.6.</strong> Keccak Circuit</a></li><li class="chapter-item expanded "><a href="architecture/mpt-circuit.html"><strong aria-hidden="true">2.7.</strong> Merkle Patricia Tree Circuit</a></li></ol></li><li class="chapter-item expanded "><a href="design.html"><strong aria-hidden="true">3.</strong> Design Notes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="design/random-linear-combinaion.html"><strong aria-hidden="true">3.1.</strong> Random Linear Combination</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="design/random-linear-combinaion/full-runnable-code.html"><strong aria-hidden="true">3.1.1.</strong> Full Runnable Code</a></li></ol></li><li class="chapter-item expanded "><a href="design/recursion.html"><strong aria-hidden="true">3.2.</strong> Recursion</a></li><li class="chapter-item expanded "><a href="design/reversible-write-reversion.html"><strong aria-hidden="true">3.3.</strong> Reversible Write Reversion Note 1</a></li><li class="chapter-item expanded "><a href="design/reversible-write-reversion2.html"><strong aria-hidden="true">3.4.</strong> Reversible Write Reversion Note 2</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">zkEVM (Community Edition) Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="architecture"><a class="header" href="#architecture">Architecture</a></h1>
+<ul>
+<li><a href="#concepts">Concepts</a>
+<ul>
+<li><a href="#architecture-diagram">Architecture diagram</a></li>
+<li><a href="#circuit-as-a-lookup-table">Circuit as a lookup table</a></li>
+<li><a href="#evm-word-encoding">EVM word encoding</a></li>
+</ul>
+</li>
+<li><a href="#custom-types">Custom types</a></li>
+<li><a href="#constants">Constants</a></li>
+</ul>
+<h1 id="concepts"><a class="header" href="#concepts">Concepts</a></h1>
+<h2 id="architecture-diagram"><a class="header" href="#architecture-diagram">Architecture diagram</a></h2>
+<p>Each circuit is layouted to be capable to build their own custom constraints. When circuits encounter some expensive operations, they can outsource the effort to other circuits through the usage of lookup arguments. 
+The relationship between circuits looks like:</p>
+<p><img src="./architecture_diagram2.png" alt="" /></p>
+<p>List of circuits and tables they generate/verify:</p>
+<table><thead><tr><th>Circuit</th><th>Table</th></tr></thead><tbody>
+<tr><td><a href="./architecture/evm-circuit.html">EVM Circuit</a></td><td></td></tr>
+<tr><td><a href="./architecture/bytecode-circuit.html">Bytecode Circuit</a></td><td><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/tables.md#bytecode_table">Bytecode Table</a></td></tr>
+<tr><td><a href="./architecture/state-circuit.html">State Circuit</a></td><td><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/tables.md#rw_table">Rw Table</a></td></tr>
+<tr><td>Block Circuit</td><td><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/tables.md#block_table">Block Table</a></td></tr>
+<tr><td><a href="./architecture/tx-circuit.html">Tx Circuit</a></td><td><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/tables.md#tx_table">Tx Table</a></td></tr>
+<tr><td><a href="./architecture/mpt-circuit.html">MPT Circuit</a></td><td>MPT Table</td></tr>
+<tr><td><a href="./architecture/keccak-circuit.html">Keccak Circuit</a></td><td>Keccak Table</td></tr>
+<tr><td><a href="./architecture/ecdsa-circuit.html">ECDSA Circuit</a></td><td>ECDSA Table</td></tr>
+</tbody></table>
+<p>In the end, the circuits would be assembled depending on their dimension and the desired capacity. For example, we can just combine 2 different circuits by using different columns, or stack them using same columns with extra selectors.</p>
+<p>In order to reduce the time required to build a proof of a full block and to
+simplify the verification step, an aggregation circuit is being build so that condenses the
+verification of each sub-circuit proofs shown in the diagram.  See <a href="./design/recursion.html">Design
+Notes, Recursion</a> for details on the recursion strategy
+used in the aggregation circuit.</p>
+<h2 id="circuit-as-a-lookup-table"><a class="header" href="#circuit-as-a-lookup-table">Circuit as a lookup table</a></h2>
+<p>In halo2, the lookup is flexible to be configured. Anything able to be turned into <code>Expression</code> could be used as <code>item: Tuple[int, ...]</code> or <code>table: Set[Tuple[int, ...]]</code> in lookup. Enabling <code>assert item in table</code>. The <code>Expression</code> includes <code>Constant</code>, <code>Fixed</code>, <code>Advice</code> or <code>Instance</code> column at arbitrary rotation.</p>
+<p>The motivation to have multiple circuits as lookup tables is that EVM contains many circuit unfriendly operations like random read-write data access, &quot;wrong&quot; field operation (ECDSA on secp256k1), traditional hash functions like <code>keccak256</code>, etc... And many of them accept variable lenght input.</p>
+<p>These expensive operations make it hard to design an EVM circuit to verify computation traces because each step could possibly contain some of the operations mentioned above. So we tried to separate these expensive operations into single-purpose circuits which have a more friendly layout, and use them via lookups to communicate it's input and output, Outsourcing the effort.</p>
+<p>The reason input-output lookups could be used to outsource the effort is that we know the that the lookup-ed table is configured with constraints to verify the input and output are in some relationship. For example, we let Bytecode circuit to hold a set of tuple <code>(code_hash, index, opcode)</code>, and each <code>code_hash</code> is verified to be the keccak256 digest of opcodes it contains, then in EVM circuit we can load <code>opcode</code> with <code>(code_hash, program_counter)</code> by looking up the Bytecode table.</p>
+<p>However, there are some properties we can't ensure only with lookups (which ultimately only prove that the contents of all the lookups are a subset of a table).  We want to constraint that the amount of all (looked-up) <code>item</code>s should be equal to the size of <code>table</code>, which is required by the EVM circuit and State circuit to prevent extra malicious writes in the <code>table</code>. In such case (the set of looked up items define the table exactly), we need some extra constraint to ensure the relationship is correct. A naive approach is to count all <code>item</code> in State circuit (which in the end is the size of the <code>table</code>) and constraint it to be equal to the value counted in the EVM circuit.</p>
+<h2 id="evm-word-encoding"><a class="header" href="#evm-word-encoding">EVM word encoding</a></h2>
+<p>See <a href="./design/random-linear-combinaion.html">Design Notes, Random Linear Combination</a></p>
+<ul>
+<li><a href="https://github.com/appliedzkp/zkevm-specs/blob/master/specs/word-encoding.md">Word encoding spec</a></li>
+</ul>
+<h1 id="custom-types"><a class="header" href="#custom-types">Custom types</a></h1>
+<h1 id="constants"><a class="header" href="#constants">Constants</a></h1>
+<table><thead><tr><th>Name</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>MAX_MEMORY_ADDRESS</code></td><td><code>2**40 - 1</code></td><td>max memory address allowed <sup class="footnote-reference"><a href="#1">1</a></sup></td></tr>
+<tr><td><code>MAX_GAS</code></td><td><code>2**64 - 1</code></td><td>max gas allowed</td></tr>
+<tr><td><code>MAX_ETHER</code></td><td><code>2**256 - 1</code></td><td>max value of ether allowed <sup class="footnote-reference"><a href="#2">2</a></sup></td></tr>
+</tbody></table>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p>The explicit max memory address in EVM is actually <code>32 * (2**32 - 1)</code>, which is the one that doesn't make memory expansion gas cost overflow <code>u64</code>. In our case, memory address is allowed to be 5 bytes, but will constrain the memory expansion gas cost to fit <code>u64</code> in success case.</p>
+</div>
+<div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
+<p>I didn't find a explicit upper bound on value of ether (for <code>balance</code> or <code>gas_price</code>) in yellow paper, but handling unbounded big integer seems unrealistic in circuit, so with <code>u256</code> as a hard bound seems reasonable.</p>
+</div>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="architecture/evm-circuit.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="architecture/evm-circuit.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        <script type="text/javascript" src="mermaid.min.js"></script>
+        <script type="text/javascript" src="mermaid-init.js"></script>
+    </body>
+</html>

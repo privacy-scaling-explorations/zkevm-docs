@@ -1,0 +1,291 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Full Runnable Code - zkEVM (Community Edition) Documentation</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <!-- MathJax -->
+        <script async type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../../architecture.html"><strong aria-hidden="true">2.</strong> Circuit Architecture</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../architecture/evm-circuit.html"><strong aria-hidden="true">2.1.</strong> EVM Circuit</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../architecture/evm-circuit/opcode-fetching.html"><strong aria-hidden="true">2.1.1.</strong> Opcode Fetching</a></li><li class="chapter-item expanded "><a href="../../architecture/evm-circuit/multi-step.html"><strong aria-hidden="true">2.1.2.</strong> Multi-Step Implementation</a></li></ol></li><li class="chapter-item expanded "><a href="../../architecture/tx-circuit.html"><strong aria-hidden="true">2.2.</strong> Tx Circuit</a></li><li class="chapter-item expanded "><a href="../../architecture/state-circuit.html"><strong aria-hidden="true">2.3.</strong> State Circuit</a></li><li class="chapter-item expanded "><a href="../../architecture/bytecode-circuit.html"><strong aria-hidden="true">2.4.</strong> Bytecode Circuit</a></li><li class="chapter-item expanded "><a href="../../architecture/ecdsa-circuit.html"><strong aria-hidden="true">2.5.</strong> ECDSA Circuit</a></li><li class="chapter-item expanded "><a href="../../architecture/keccak-circuit.html"><strong aria-hidden="true">2.6.</strong> Keccak Circuit</a></li><li class="chapter-item expanded "><a href="../../architecture/mpt-circuit.html"><strong aria-hidden="true">2.7.</strong> Merkle Patricia Tree Circuit</a></li></ol></li><li class="chapter-item expanded "><a href="../../design.html"><strong aria-hidden="true">3.</strong> Design Notes</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../design/random-linear-combinaion.html"><strong aria-hidden="true">3.1.</strong> Random Linear Combination</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../design/random-linear-combinaion/full-runnable-code.html" class="active"><strong aria-hidden="true">3.1.1.</strong> Full Runnable Code</a></li></ol></li><li class="chapter-item expanded "><a href="../../design/recursion.html"><strong aria-hidden="true">3.2.</strong> Recursion</a></li><li class="chapter-item expanded "><a href="../../design/reversible-write-reversion.html"><strong aria-hidden="true">3.3.</strong> Reversible Write Reversion Note 1</a></li><li class="chapter-item expanded "><a href="../../design/reversible-write-reversion2.html"><strong aria-hidden="true">3.4.</strong> Reversible Write Reversion Note 2</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">zkEVM (Community Edition) Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="random-linear-combination-full-runnable-code"><a class="header" href="#random-linear-combination-full-runnable-code">Random Linear Combination full runnable code</a></h1>
+<pre><code class="language-python">from Crypto.Hash import keccak
+from Crypto.Random.random import randrange
+
+
+def keccak256(data: list) -&gt; list:
+    return list(keccak.new(digest_bits=256).update(bytes(data)).digest())
+
+
+# BN254 scalar field size.
+FP = 21888242871839275222246405745257275088548364400416034343698204186575808495617
+
+
+def fp_add(a: int, b: int) -&gt; int: return (a + b) % FP
+def fp_mul(a: int, b: int) -&gt; int: return (a * b) % FP
+
+
+# rlc_to_bytes records the original bytes of a random linear combination.
+# In circuit we ask prover the provide bytes and verify all bytes are in range
+# and the random linear combination matches.
+rlc_to_bytes = dict()
+
+
+def random_linear_combine(bytes: list, r: int) -&gt; int:
+    &quot;&quot;&quot;
+    random_linear_combine returns bytes[0] + r*bytes[1] + ... + (r**31)*bytes[31].
+    &quot;&quot;&quot;
+
+    rlc = 0
+    for byte in reversed(bytes):
+        assert 0 &lt;= byte &lt; 256
+        rlc = fp_add(fp_mul(rlc, r), byte)
+
+    rlc_to_bytes[rlc] = bytes
+
+    return rlc
+
+
+def add_bytes(lhs: list, rhs: list) -&gt; list:
+    &quot;&quot;&quot;
+    add_bytes adds 2 little-endian bytes value modulus 2**256 and returns result
+    as bytes also in little-endian.
+    &quot;&quot;&quot;
+
+    result = (
+        int.from_bytes(lhs, 'little') +
+        int.from_bytes(rhs, 'little')
+    ) % 2**256
+
+    return list(result.to_bytes(32, 'little'))
+
+
+def randomness_approach_2(bytecode: list, claimed_output: list) -&gt; int:
+    return int.from_bytes(keccak256(bytecode + claimed_output), 'little') % FP
+
+
+def run(bytecode: list, claimed_output: list):
+    &quot;&quot;&quot;
+    run takes bytecode to execute and treat the top of stack as output in the end.
+    &quot;&quot;&quot;
+
+    # Derive randomness
+    r = randomness_approach_2(bytecode, claimed_output)
+
+    # Despite an EVM word is 256-bit which is larger then field size, we store it
+    # as random linear combination in stack. Top value is in the end of the list.
+    stack = []
+
+    program_counter = 0
+    while program_counter &lt; len(bytecode):
+        opcode = bytecode[program_counter]
+
+        # PUSH32
+        if opcode == 0x00:
+            # Read next 32 bytes as an EVM word from bytecode
+            bytes = bytecode[program_counter+1:program_counter+33]
+            # Push random linear combination of the EVM word to stack
+            stack.append(random_linear_combine(bytes, r))
+            program_counter += 33
+        # ADD
+        elif opcode == 0x01:
+            # Pop 2 random linear combination EVM word from stack
+            a, b = stack.pop(), stack.pop()
+            # Decompress them into little-endian bytes
+            bytes_a, bytes_b = rlc_to_bytes[a], rlc_to_bytes[b]
+            # Add them together
+            bytes_c = add_bytes(bytes_a, bytes_b)
+            # Push result as random linear combination to stack
+            stack.append(random_linear_combine(bytes_c, r))
+            program_counter += 1
+        else:
+            raise ValueError(&quot;invalid opcode&quot;)
+
+    assert rlc_to_bytes[stack.pop()] == claimed_output, &quot;unsatisfied&quot;
+
+
+def test_run():
+    a, b = randrange(0, 2**256), randrange(0, 2**256)
+    c = (a + b) % 2**256
+    run(
+        bytecode=[
+            0x00, *a.to_bytes(32, 'little'),  # PUSH32 a
+            0x00, *b.to_bytes(32, 'little'),  # PUSH32 b
+            0x01                              # ADD
+        ],
+        claimed_output=list(c.to_bytes(32, 'little')),
+    )
+
+
+test_run()
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../design/random-linear-combinaion.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../../design/recursion.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../design/random-linear-combinaion.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../../design/recursion.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        <script type="text/javascript" src="../../mermaid.min.js"></script>
+        <script type="text/javascript" src="../../mermaid-init.js"></script>
+    </body>
+</html>
