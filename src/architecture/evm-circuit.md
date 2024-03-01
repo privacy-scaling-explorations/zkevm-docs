@@ -4,27 +4,23 @@
 
 # Introduction
 
-EVM circuit iterates over transactions included in the proof to verify that each execution step of a transaction is valid. Basically the scale of a step is the same as in the EVM, so usually we handle one opcode per step, except those opcodes like `SHA3` or `CALLDATACOPY` that operate on variable size of memory, which would require multiple "virtual" steps.
+EVM circuit iterates over transactions included in the proof to verify that each execution step of a transaction is valid. Each iteration handles one opcode per step (as is the case in the EVM), except opcodes which operate on variable size of memory (such as `SHA3` or `CALLDATACOPY`), which would require multiple "virtual" steps [^1].
 
-> The scale of a step somehow could be different depends on the approach, an extreme case is to implement a VM with reduced instruction set (like TinyRAM) to emulate EVM, which would have a much smaller step, but not sure how it compares to current approach.
->
-> **han**
+In order to verify if a step is valid, we must first enumerate all possible execution results of a step in the EVM - including success and error cases, and then build a custom constraint to verify that the step transition is correct for each execution result.
 
-To verify if a step is valid, we first enumerate all possible execution results of a step in the EVM including success and error cases, and then build a custom constraint to verify that the step transition is correct for each execution result.
-
-For each step, we constrain it to enable one of the execution results, and specially, to constrain the first step to enable `BEGIN_TX`, which then repeats the step to verify the full execution trace. Also each step is given access to next step to propagate the tracking information, by putting constraints like `assert next.program_counter == curr.program_counter + 1`.
+For each step, we constrain it to enable one of the execution results, and specially, to constrain the first step to enable `BEGIN_TX`, which then repeats the step to verify the full execution trace. Also each step is given access to the next ste in order to propagate the tracking information. This is accomplished by putting constraints like `assert next.program_counter == curr.program_counter + 1`.
 
 # Concepts
 
 ## Execution result
 
-It's intuitive to have each opcode as a branch in step. However, EVM has so rich opcodes that some of them are very similar like `{ADD,SUB}`, `{PUSH*}`, `{DUP*}` and `{SWAP*}` that seem to be handled by almost identical constraint with small tweak (to swap a value or automatically done due to linearity), it seems we could reduce our effort to only implement it once to handle multiple opcodes in single branch.
+One's first intuition may be to have each opcode as a branch in step, however, due to the similarities between opcodes, such as `{ADD,SUB}`, `{PUSH*}`, `{DUP*}` and `{SWAP*}` , we can handle many opcodes in a single branch with minor adjustments.
 
-In addition, an EVM state transition could also contain serveral kinds of error cases, we also need to take them into consideration to be equivalent to EVM. It would be annoying for each opcode branch to handle their own error cases since it needs to halt the step and return the execution context to caller.
+Each EVM state transition can contain several kinds of error cases, so we need to take them into consideration to be equivalent to EVM, rather than each opcode branch handling its own error cases as that would result in the execution being returned to the caller, thus halting the step. Fortunately, most error cases are easy to verify with a pre-built lookup table, there are some exceptions such as an out of gas error due to dynamic gas usage.
 
-Fortunately, most error cases are easy to verify with some pre-built lookup table even they could happen to many opcodes, only some tough errors like out of gas due to dynamic gas usage need to be verified one by one. So we further unroll all kinds of error cases as kinds of execution result.
+Because of this complexity, we unroll all kinds of error cases as a type of execution result.
 
-So we can enumerate [all possible execution results](https://github.com/appliedzkp/zkevm-specs/blob/83ad4ed571e3ada7c18a411075574110dfc5ae5a/src/zkevm_specs/evm/execution_result/execution_result.py#L4) and turn EVM circuit into a finite state machine like:
+This gives us the ability to enumerate [all possible execution results](https://github.com/appliedzkp/zkevm-specs/blob/83ad4ed571e3ada7c18a411075574110dfc5ae5a/src/zkevm_specs/evm/execution_result/execution_result.py#L4) and subsequently represent the EVM circuit as a finite state machine (see below)
 
 ```mermaid
 flowchart LR
@@ -58,7 +54,7 @@ flowchart LR
     - Beginning of a transaction.
 - **EVMExecStates** = [ SuccessStep | ReturnStep ]
 - **SuccessStep** = [ ExecStep | ExecMetaStep | ExecSubStep ]
-    - Set of states that suceed and continue the execution within the call.
+    - Set of states that succeed and continue the execution within the call.
 - **ReturnStep** = [ ExplicitReturn | Error ]
     - Set of states that halt the execution of a call and return to the caller
       or go to the next tx.
@@ -183,3 +179,7 @@ For a simple `CALL` example with illustration (many details are hided for simpli
 - [spec](https://github.com/appliedzkp/zkevm-specs/blob/master/specs/evm-proof.md)
     - [python](https://github.com/appliedzkp/zkevm-specs/tree/master/src/zkevm_specs/evm)
 - [circuit](https://github.com/appliedzkp/zkevm-circuits/tree/main/zkevm-circuits/src/evm_circuit)
+
+
+[^1]: This approach could be modified in the future to utilize a reduced instruction set such as TinyRAM which emulates the EVM, but that would required further exploration to determine if it's more efficient than the current approach.
+

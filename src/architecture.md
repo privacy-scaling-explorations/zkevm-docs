@@ -27,22 +27,18 @@ List of circuits and tables they generate/verify:
 In the end, the circuits would be assembled depending on their dimension and the desired capacity. For example, we can just combine 2 different circuits by using different columns, or stack them using same columns with extra selectors.
 
 In order to reduce the time required to build a proof of a full block and to
-simplify the verification step, an aggregation circuit is being build so that condenses the
- verification of each sub-circuit proofs shown in the diagram.  See [Design
+simplify the verification step, an aggregation circuit is being built to condenses the
+verification of each sub-circuit proof shown in the diagram.  See [Design
 Notes, Recursion](./design/recursion.md) for details on the recursion strategy
 used in the aggregation circuit.
 
 ## Circuit as a lookup table
 
-In halo2, the lookup is flexible to be configured. Anything able to be turned into `Expression` could be used as `item: Tuple[int, ...]` or `table: Set[Tuple[int, ...]]` in lookup. Enabling `assert item in table`. The `Expression` includes `Constant`, `Fixed`, `Advice` or `Instance` column at arbitrary rotation.
+In halo2, lookup configuration is quite flexible, therefore anything that can be represented as an `Expression` could be used as an `item: Tuple[int, ...]` or `table: Set[Tuple[int, ...]]` in lookup. This enables assertion of items in the lookup table e.g. `assert item in table`. Examples of the `Expression` include `Constant`, `Fixed`, `Advice` or `Instance` column at arbitrary rotation.
 
-The motivation to have multiple circuits as lookup tables is that EVM contains many circuit unfriendly operations like random read-write data access, "wrong" field operation (ECDSA on secp256k1), traditional hash functions like `keccak256`, etc... And many of them accept variable lenght input.
+The motivation to have multiple circuits as lookup tables is that the EVM contains many operations which are not suited to circuits, such as random read-write data access, "wrong" field operation (ECDSA on secp256k1) and traditional hash functions like `keccak256` to name a few. This is not suited to circuits because they all accept variable length inputs. Designing an EVM circuit that can verify computation traces become much more complex because each step could possibly contain some of the aforementioned operations. In order to solve this problem, we separated these expensive operations into single-purpose circuits which have a more friendly layout, and use them via lookups to communicate the requisite input and output. This is made possible by the fact that the lookup table is configured with constraints to ensure that the input and output have a relationship. For example, the Bytecode circuit contains a set of tuples `(code_hash, index, opcode)`, and each `code_hash` is the keccak256 digest of opcodes it contains, thus in the EVM circuit we can load `opcode` with `(code_hash, program_counter)` by performing a lookup the Bytecode table.
 
-These expensive operations make it hard to design an EVM circuit to verify computation traces because each step could possibly contain some of the operations mentioned above. So we tried to separate these expensive operations into single-purpose circuits which have a more friendly layout, and use them via lookups to communicate it's input and output, Outsourcing the effort.
-
-The reason input-output lookups could be used to outsource the effort is that we know the that the lookup-ed table is configured with constraints to verify the input and output are in some relationship. For example, we let Bytecode circuit to hold a set of tuple `(code_hash, index, opcode)`, and each `code_hash` is verified to be the keccak256 digest of opcodes it contains, then in EVM circuit we can load `opcode` with `(code_hash, program_counter)` by looking up the Bytecode table.
-
-However, there are some properties we can't ensure only with lookups (which ultimately only prove that the contents of all the lookups are a subset of a table).  We want to constraint that the amount of all (looked-up) `item`s should be equal to the size of `table`, which is required by the EVM circuit and State circuit to prevent extra malicious writes in the `table`. In such case (the set of looked up items define the table exactly), we need some extra constraint to ensure the relationship is correct. A naive approach is to count all `item` in State circuit (which in the end is the size of the `table`) and constraint it to be equal to the value counted in the EVM circuit.
+Whilst this method may work well for many cases, there are some properties that can't be verified exclusively with lookups (because the contents of all the lookups are only a subset of a table). Therefore, the number of all *looked-up items* should be equal to the size of `table`. This constraint is required by the EVM circuit and State circuit to prevent malicious writes in the `table`. In such case (the set of looked up items define the table exactly), we need some extra constraint to ensure the relationship is correct. A naive approach is to count all `item` in State circuit (which in the end is the size of the `table`) and ensure that it is equal to the value counted in the EVM circuit.
 
 
 ## EVM word encoding
@@ -62,6 +58,6 @@ See [Design Notes, Random Linear Combination](./design/random-linear-combinaion.
 | `MAX_ETHER`          | `2**256 - 1` | max value of ether allowed [^2] |
 
 
-[^1]: The explicit max memory address in EVM is actually `32 * (2**32 - 1)`, which is the one that doesn't make memory expansion gas cost overflow `u64`. In our case, memory address is allowed to be 5 bytes, but will constrain the memory expansion gas cost to fit `u64` in success case.
+[^1]: The explicit max memory address in EVM is actually `32 * (2**32 - 1)`,in order to prevent memory expansion gas cost from overflowing `u64`. In theory, a memory address is allowed to be 5 bytes, but will limit the memory expansion gas cost to fit `u64` in success case.
 
-[^2]: I didn't find a explicit upper bound on value of ether (for `balance` or `gas_price`) in yellow paper, but handling unbounded big integer seems unrealistic in circuit, so with `u256` as a hard bound seems reasonable.
+[^2]: There's no explicit upper bound on the value of ether (for `balance` or `gas_price`) in the yellow paper, but handling an unbounded big integer is impractical in  the circuit, so it is limited to `u256`.
